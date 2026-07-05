@@ -364,7 +364,6 @@
             }
         };
 
-        // MELHORIA: Renderiza a foto dentro do quadrado do botão na hora do upload como confirmação visual
         function configurarUploadListeners() {
             const upNovo = document.getElementById('novoItemImagem');
             const lblNovo = document.getElementById('lblNovoItemImagem');
@@ -490,6 +489,7 @@
             document.getElementById("pendenciasDetalhe").textContent = exemplos + (vencidos.length > 3 ? ` e mais ${vencidos.length - 3}...` : "");
         }
 
+        // CORREÇÃO: Removido o bug 'sector' e mapeada a contagem correta
         function renderSetorCards() {
             const setoresNaBase = [...new Set(checklistItens.map(i => i.setor).filter(Boolean))];
             const setores = setoresNaBase.length ? setoresNaBase : SETORES_PADRAO;
@@ -497,7 +497,7 @@
             container.innerHTML = "";
 
             setores.forEach(setor => {
-                const pendentesDoSetor = checklistStatus.filter(s => s.setor === sector && s.vencido).length;
+                const pendentesDoSetor = checklistStatus.filter(s => s.setor === setor && s.vencido).length;
                 const badge = pendentesDoSetor > 0
                     ? `<span class="inline-block mt-3 text-[11px] font-semibold bg-red-100 text-red-700 px-3 py-1 rounded-full">${pendentesDoSetor} pendente(s)</span>`
                     : `<span class="inline-block mt-3 text-[11px] font-semibold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">Em dia</span>`;
@@ -572,6 +572,7 @@
             return `<span class="text-[11px] font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full shadow-sm">Em dia</span>`;
         }
 
+        // ================= TABELA DE CHECKLIST COMPLETA =================
         function renderChecklistItensView() {
             const container = document.getElementById("checklistContainer");
             container.innerHTML = "";
@@ -640,7 +641,18 @@
             }
         }
 
-        // LEITURA INSTANTÂNEA E ATUALIZAÇÃO OTIMISTA SEM AGUARDAR TIMEOUT DA REDE
+        function ocoletarDadosChecklist(row) {
+            return {
+                maquina: row.getAttribute("data-maquina"),
+                item: row.getAttribute("data-item"),
+                setor: setorAtual,
+                periodicidade: periodoAtual,
+                status: row.querySelector(".status-sel").value,
+                operador: row.querySelector(".operador-inp").value,
+                obs: row.querySelector(".obs-inp").value
+            };
+        }
+
         async function registrarItemIndividualChecklist(btn) {
             const row = btn.closest("tr");
             const op = row.querySelector(".operador-inp").value.trim();
@@ -651,19 +663,17 @@
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>`;
 
-            // ATUALIZAÇÃO OTIMISTA: Executa a mudança de interface na mesma hora
             if (ehPeriodicidadeDiaria(periodoAtual)) {
                 prepararProximoRegistroDiario(row, btn, op);
             } else {
                 marcarLinhaComoRegistrada(row, btn);
             }
 
-            // Dispara em plano de fundo sem travar o operador na tela
             fetch(API_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify([dadosItem])
-            }).catch(e => console.log("Salvo em plano de fundo."));
+            }).catch(e => console.log("Salvo em background."));
         }
 
         // ================= ALMOXARIFADO TÉCNICO COM VALIDAÇÃO DE DADOS EM DATALIST =================
@@ -761,6 +771,7 @@
 
         function fecharModalMovimentacao() { document.getElementById("movimentacaoModal").classList.add("hidden"); }
 
+        // CORREÇÃO: Variável unificada para imagemAtualVisualizar mapeada corretamente
         function atualizarInfoMovimentacao() {
             const id = document.getElementById("movItemSelect").value;
             const item = almoxarifadoItens.find(i => String(i.id) === id);
@@ -772,14 +783,22 @@
                 txtDesc.textContent = item.descricao ? item.descricao : "Sem descrição cadastrada.";
                 txtLoc.textContent = item.localizacao ? item.localizacao : "Sem localização cadastrada.";
                 if(item.imagem && item.imagem.trim() !== "") {
-                    imagemOriginalVisualizar = item.imagem;
+                    imagemAtualVisualizar = item.imagem;
                     btnImg.classList.remove("opacity-50", "pointer-events-none");
                 } else {
-                    imagemOriginalVisualizar = "";
+                    imagemAtualVisualizar = "";
                     btnImg.classList.add("opacity-50", "pointer-events-none");
                 }
             }
         }
+
+        function visualizarImagemItem() {
+            if(imagemAtualVisualizar) {
+                document.getElementById("imageViewerSrc").src = imagemAtualVisualizar;
+                document.getElementById("imageViewerModal").classList.remove("hidden");
+            }
+        }
+        function fecharImageViewer() { document.getElementById("imageViewerModal").classList.add("hidden"); }
 
         function abrirModalEditarItemDesdeMov() {
             const id = document.getElementById("movItemSelect").value;
@@ -848,7 +867,6 @@
             } catch (e) { alert("Erro ao cadastrar item."); }
         }
 
-        // CONFIRMAÇÃO AUTOMÁTICA NA EDIÇÃO: Preenche o quadradinho com a imagem anterior salva na planilha
         function abrirModalEditarItem(id) {
             const item = almoxarifadoItens.find(i => String(i.id) === id);
             if(!item) return;
@@ -901,6 +919,13 @@
                 fecharModalEditarItem();
                 await carregarTudo();
             } catch (e) { alert("Erro ao salvar alterações."); }
+        }
+
+        function abrirViewerDireto(img) {
+            if(img && img.trim() !== "") {
+                document.getElementById("imageViewerSrc").src = img;
+                document.getElementById("imageViewerModal").classList.remove("hidden");
+            }
         }
 
         // ================= IMPRESSÃO MATRIZ DE PAPEL ADAPTÁVEL =================
