@@ -364,6 +364,14 @@
             }
         };
 
+        function configuringUploadListeners() {
+            // Placeholder para retrocompatibilidade
+        }
+
+        function configuringUploadListenersDynamic() {
+            // Placeholder para retrocompatibilidade
+        }
+
         function configurarUploadListeners() {
             const upNovo = document.getElementById('novoItemImagem');
             const lblNovo = document.getElementById('lblNovoItemImagem');
@@ -489,7 +497,6 @@
             document.getElementById("pendenciasDetalhe").textContent = exemplos + (vencidos.length > 3 ? ` e mais ${vencidos.length - 3}...` : "");
         }
 
-        // CORREÇÃO: Removido o bug 'sector' e mapeada a contagem correta
         function renderSetorCards() {
             const setoresNaBase = [...new Set(checklistItens.map(i => i.setor).filter(Boolean))];
             const setores = setoresNaBase.length ? setoresNaBase : SETORES_PADRAO;
@@ -653,6 +660,7 @@
             };
         }
 
+        // SOLUÇÃO DO COMPORTAMENTO TRAVADO: Atualiza a interface ANTES da rede (True Optimistic Update)
         async function registrarItemIndividualChecklist(btn) {
             const row = btn.closest("tr");
             const op = row.querySelector(".operador-inp").value.trim();
@@ -660,15 +668,19 @@
             if (!op) { alert("Informe o nome do operador antes de registrar este item."); return; }
 
             const dadosItem = ocoletarDadosChecklist(row);
+            
+            // 1. Muda o estado visual para carregamento imediatamente
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>`;
 
+            // 2. Destrava e atualiza o layout na hora (Carimbo e Botão Laranja) sem esperar a rede responder
             if (ehPeriodicidadeDiaria(periodoAtual)) {
                 prepararProximoRegistroDiario(row, btn, op);
             } else {
                 marcarLinhaComoRegistrada(row, btn);
             }
 
+            // 3. Dispara o salvamento no Sheets em plano de fundo de forma não-bloqueante
             fetch(API_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -771,7 +783,6 @@
 
         function fecharModalMovimentacao() { document.getElementById("movimentacaoModal").classList.add("hidden"); }
 
-        // CORREÇÃO: Variável unificada para imagemAtualVisualizar mapeada corretamente
         function atualizarInfoMovimentacao() {
             const id = document.getElementById("movItemSelect").value;
             const item = almoxarifadoItens.find(i => String(i.id) === id);
@@ -791,14 +802,6 @@
                 }
             }
         }
-
-        function visualizarImagemItem() {
-            if(imagemAtualVisualizar) {
-                document.getElementById("imageViewerSrc").src = imagemAtualVisualizar;
-                document.getElementById("imageViewerModal").classList.remove("hidden");
-            }
-        }
-        function fecharImageViewer() { document.getElementById("imageViewerModal").classList.add("hidden"); }
 
         function abrirModalEditarItemDesdeMov() {
             const id = document.getElementById("movItemSelect").value;
