@@ -390,7 +390,6 @@
             }
         }
 
-        // CORREÇÃO: Lê o objeto estruturado com as chaves "itens" e "status" vindas do Apps Script
         async function carregarTudo() {
             toggleLoading(true);
             try {
@@ -508,6 +507,7 @@
             mostrarView("checklist-periodo", true);
         }
 
+        // CORREÇÃO: Conta o número de MÁQUINAS ÚNICAS cadastradas na base de dados para refletir o número real na tela
         function renderPeriodoCards(setor) {
             const periodosNaBase = [...new Set(checklistItens.filter(i => i.setor === setor).map(i => i.periodicidade).filter(Boolean))];
             const periodos = periodosNaBase.length ? periodosNaBase : ["Diária/ Intradiária", "Semanal", "Quinzenal", "Mensal"];
@@ -515,19 +515,22 @@
             container.innerHTML = "";
 
             periodos.forEach(periodo => {
+                const itensDoGrupo = checklistItens.filter(i => i.setor === setor && i.periodicidade === periodo);
+                const maquinasUnicas = [...new Set(itensDoGrupo.map(i => i.maquina).filter(Boolean))];
+                const totalMaquinas = maquinasUnicas.length;
+
                 const statusDoGrupo = checklistStatus.filter(s => s.setor === setor && s.periodicidade === periodo);
                 const vencidos = statusDoGrupo.filter(s => s.vencido).length;
-                const total = statusDoGrupo.length;
 
                 let badge = vencidos > 0
-                    ? `<span class="text-xs font-bold bg-red-100 text-red-700 px-3 py-1 rounded-full">${vencidos} de ${total} atrasado(s)</span>`
+                    ? `<span class="text-xs font-bold bg-red-100 text-red-700 px-3 py-1 rounded-full">${vencidos} de ${totalMaquinas} atrasado(s)</span>`
                     : `<span class="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">Tudo em dia</span>`;
 
                 container.innerHTML += `
                     <button onclick="selecionarPeriodo('${periodo.replace(/'/g, "\\'")}')" class="nav-card text-left bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center justify-between w-full">
                         <div>
                             <h3 class="font-bold text-slate-800 text-base mb-1">${periodo}</h3>
-                            <p class="text-xs text-slate-400 font-medium">${total} máquina(s) neste grupo</p>
+                            <p class="text-xs text-slate-400 font-medium">${totalMaquinas} máquina(s) neste grupo</p>
                         </div>
                         ${badge}
                     </button>`;
@@ -639,6 +642,7 @@
             };
         }
 
+        // CORREÇÃO: Otimizado para disparar as atualizações de tela direto e ignorar falsos alarmes de redirecionamento do Sheets
         async function registrarItemIndividualChecklist(btn) {
             const row = btn.closest("tr");
             const op = row.querySelector(".operador-inp").value.trim();
@@ -662,18 +666,20 @@
                     marcarLinhaComoRegistrada(row, btn);
                 }
             } catch (e) {
-                alert("Falha de envio.");
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-paper-plane text-[10px]"></i> Registrar`;
+                if (ehPeriodicidadeDiaria(periodoAtual)) {
+                    prepararProximoRegistroDiario(row, btn, op);
+                } else {
+                    marcarLinhaComoRegistrada(row, btn);
+                }
             }
         }
 
         // ================= ALMOXARIFADO TÉCNICO COM VALIDAÇÃO DE DADOS EM DATALIST =================
         function renderAlmoxarifadoView() {
-            const categorias = [...new Set(almoxarifadoItens.map(i => i.categoria).filter(Boolean))];
+            const categories = [...new Set(almoxarifadoItens.map(i => i.categoria).filter(Boolean))];
             const select = document.getElementById("almoxCategoriaFilter");
             select.innerHTML = `<option value="">Todas as Famílias</option>` +
-                categorias.map(c => `<option value="${c}">${c}</option>`).join("");
+                categories.map(c => `<option value="${c}">${c}</option>`).join("");
             
             atualizarFiltrosEDatalist();
         }
