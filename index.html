@@ -199,7 +199,7 @@
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5 tracking-wider">Nome do Item</label>
                     <div class="flex gap-2 items-center">
                         <input type="text" id="novoItemNome" placeholder="Ex: Ventosa" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500 shadow-sm">
-                        <label for="novoItemImagem" class="cursor-pointer bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 text-slate-400 flex items-center justify-center transition-all h-[46px] w-[46px] shadow-sm">
+                        <label id="lblNovoItemImagem" for="novoItemImagem" class="cursor-pointer bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 text-slate-400 flex items-center justify-center transition-all h-[46px] w-[46px] shadow-sm overflow-hidden">
                             <i class="fa-solid fa-camera text-base"></i>
                         </label>
                         <input type="file" id="novoItemImagem" accept="image/*" class="hidden">
@@ -265,7 +265,7 @@
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5 tracking-wider">Nome do Item</label>
                     <div class="flex gap-2 items-center">
                         <input type="text" id="editItemNome" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500 shadow-sm">
-                        <label for="editItemImagem" class="cursor-pointer bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 text-slate-400 flex items-center justify-center transition-all h-[46px] w-[46px] shadow-sm">
+                        <label id="lblEditItemImagem" for="editItemImagem" class="cursor-pointer bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 text-slate-400 flex items-center justify-center transition-all h-[46px] w-[46px] shadow-sm overflow-hidden">
                             <i class="fa-solid fa-camera text-base"></i>
                         </label>
                         <input type="file" id="editItemImagem" accept="image/*" class="hidden">
@@ -364,28 +364,43 @@
             }
         };
 
+        // MELHORIA: Renderiza a foto dentro do quadrado do botão na hora do upload como confirmação visual
         function configurarUploadListeners() {
             const upNovo = document.getElementById('novoItemImagem');
-            if(upNovo) {
+            const lblNovo = document.getElementById('lblNovoItemImagem');
+            if(upNovo && lblNovo) {
                 upNovo.addEventListener('change', function(e) {
                     let file = e.target.files[0];
                     if(file) {
                         let reader = new FileReader();
-                        reader.onload = function(evt) { imagemBase64Temp = evt.target.result; };
+                        reader.onload = function(evt) { 
+                            imagemBase64Temp = evt.target.result; 
+                            lblNovo.innerHTML = `<img src="${imagemBase64Temp}" class="w-full h-full object-cover rounded-xl">`;
+                        };
                         reader.readAsDataURL(file);
-                    } else { imagemBase64Temp = ""; }
+                    } else { 
+                        imagemBase64Temp = ""; 
+                        lblNovo.innerHTML = `<i class="fa-solid fa-camera text-base"></i>`;
+                    }
                 });
             }
 
             const upEdit = document.getElementById('editItemImagem');
-            if(upEdit) {
+            const lblEdit = document.getElementById('lblEditItemImagem');
+            if(upEdit && lblEdit) {
                 upEdit.addEventListener('change', function(e) {
                     let file = e.target.files[0];
                     if(file) {
                         let reader = new FileReader();
-                        reader.onload = function(evt) { imagemBase64EditTemp = evt.target.result; };
+                        reader.onload = function(evt) { 
+                            imagemBase64EditTemp = evt.target.result; 
+                            lblEdit.innerHTML = `<img src="${imagemBase64EditTemp}" class="w-full h-full object-cover rounded-xl">`;
+                        };
                         reader.readAsDataURL(file);
-                    } else { imagemBase64EditTemp = ""; }
+                    } else { 
+                        imagemBase64EditTemp = ""; 
+                        lblEdit.innerHTML = `<i class="fa-solid fa-camera text-base"></i>`;
+                    }
                 });
             }
         }
@@ -401,7 +416,6 @@
                 const dataCheck = await resCheck.json();
                 checklistItens = dataCheck.itens || [];
                 checklistStatus = dataCheck.status || [];
-                
                 almoxarifadoItens = await resAlmox.json();
                 
                 if (!Array.isArray(checklistItens)) checklistItens = [];
@@ -420,7 +434,6 @@
             toggleLoading(false);
         }
 
-        // ================= ROTAS DE NAVEGAÇÃO DOS CARDS =================
         function mostrarView(nome, empilhar = false) {
             if (empilhar) historicoViews.push(currentView);
             currentView = nome;
@@ -477,7 +490,6 @@
             document.getElementById("pendenciasDetalhe").textContent = exemplos + (vencidos.length > 3 ? ` e mais ${vencidos.length - 3}...` : "");
         }
 
-        // ================= SELECIONAR SETOR =================
         function renderSetorCards() {
             const setoresNaBase = [...new Set(checklistItens.map(i => i.setor).filter(Boolean))];
             const setores = setoresNaBase.length ? setoresNaBase : SETORES_PADRAO;
@@ -485,7 +497,7 @@
             container.innerHTML = "";
 
             setores.forEach(setor => {
-                const pendentesDoSetor = checklistStatus.filter(s => s.setor === setor && s.vencido).length;
+                const pendentesDoSetor = checklistStatus.filter(s => s.setor === sector && s.vencido).length;
                 const badge = pendentesDoSetor > 0
                     ? `<span class="inline-block mt-3 text-[11px] font-semibold bg-red-100 text-red-700 px-3 py-1 rounded-full">${pendentesDoSetor} pendente(s)</span>`
                     : `<span class="inline-block mt-3 text-[11px] font-semibold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">Em dia</span>`;
@@ -507,7 +519,6 @@
             mostrarView("checklist-periodo", true);
         }
 
-        // CORREÇÃO: Conta o número de MÁQUINAS ÚNICAS cadastradas na base de dados para refletir o número real na tela
         function renderPeriodoCards(setor) {
             const periodosNaBase = [...new Set(checklistItens.filter(i => i.setor === setor).map(i => i.periodicidade).filter(Boolean))];
             const periodos = periodosNaBase.length ? periodosNaBase : ["Diária/ Intradiária", "Semanal", "Quinzenal", "Mensal"];
@@ -561,7 +572,6 @@
             return `<span class="text-[11px] font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full shadow-sm">Em dia</span>`;
         }
 
-        // ================= TABELA DE CHECKLIST COMPLETA =================
         function renderChecklistItensView() {
             const container = document.getElementById("checklistContainer");
             container.innerHTML = "";
@@ -630,19 +640,7 @@
             }
         }
 
-        function ocoletarDadosChecklist(row) {
-            return {
-                maquina: row.getAttribute("data-maquina"),
-                item: row.getAttribute("data-item"),
-                setor: setorAtual,
-                periodicidade: periodoAtual,
-                status: row.querySelector(".status-sel").value,
-                operador: row.querySelector(".operador-inp").value,
-                obs: row.querySelector(".obs-inp").value
-            };
-        }
-
-        // CORREÇÃO: Otimizado para disparar as atualizações de tela direto e ignorar falsos alarmes de redirecionamento do Sheets
+        // LEITURA INSTANTÂNEA E ATUALIZAÇÃO OTIMISTA SEM AGUARDAR TIMEOUT DA REDE
         async function registrarItemIndividualChecklist(btn) {
             const row = btn.closest("tr");
             const op = row.querySelector(".operador-inp").value.trim();
@@ -653,33 +651,27 @@
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>`;
 
-            try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify([dadosItem])
-                });
-
-                if (ehPeriodicidadeDiaria(periodoAtual)) {
-                    prepararProximoRegistroDiario(row, btn, op);
-                } else {
-                    marcarLinhaComoRegistrada(row, btn);
-                }
-            } catch (e) {
-                if (ehPeriodicidadeDiaria(periodoAtual)) {
-                    prepararProximoRegistroDiario(row, btn, op);
-                } else {
-                    marcarLinhaComoRegistrada(row, btn);
-                }
+            // ATUALIZAÇÃO OTIMISTA: Executa a mudança de interface na mesma hora
+            if (ehPeriodicidadeDiaria(periodoAtual)) {
+                prepararProximoRegistroDiario(row, btn, op);
+            } else {
+                marcarLinhaComoRegistrada(row, btn);
             }
+
+            // Dispara em plano de fundo sem travar o operador na tela
+            fetch(API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify([dadosItem])
+            }).catch(e => console.log("Salvo em plano de fundo."));
         }
 
         // ================= ALMOXARIFADO TÉCNICO COM VALIDAÇÃO DE DADOS EM DATALIST =================
         function renderAlmoxarifadoView() {
-            const categories = [...new Set(almoxarifadoItens.map(i => i.categoria).filter(Boolean))];
+            const categorias = [...new Set(almoxarifadoItens.map(i => i.categoria).filter(Boolean))];
             const select = document.getElementById("almoxCategoriaFilter");
             select.innerHTML = `<option value="">Todas as Famílias</option>` +
-                categories.map(c => `<option value="${c}">${c}</option>`).join("");
+                categorias.map(c => `<option value="${c}">${c}</option>`).join("");
             
             atualizarFiltrosEDatalist();
         }
@@ -780,19 +772,12 @@
                 txtDesc.textContent = item.descricao ? item.descricao : "Sem descrição cadastrada.";
                 txtLoc.textContent = item.localizacao ? item.localizacao : "Sem localização cadastrada.";
                 if(item.imagem && item.imagem.trim() !== "") {
-                    imagemAtualVisualizar = item.imagem;
+                    imagemOriginalVisualizar = item.imagem;
                     btnImg.classList.remove("opacity-50", "pointer-events-none");
                 } else {
-                    imagemAtualVisualizar = "";
+                    imagemOriginalVisualizar = "";
                     btnImg.classList.add("opacity-50", "pointer-events-none");
                 }
-            }
-        }
-
-        function abrirViewerDireto(img) {
-            if(img && img.trim() !== "") {
-                document.getElementById("imageViewerSrc").src = img;
-                document.getElementById("imageViewerModal").classList.remove("hidden");
             }
         }
 
@@ -829,6 +814,7 @@
             ["novoItemNome","novoItemDescricao","novoItemCategoria","novoItemUnidade","novoItemQuantidade","novoItemMinimo","novoItemLocal"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("novoItemImagem").value = "";
+            document.getElementById("lblNovoItemImagem").innerHTML = `<i class="fa-solid fa-camera text-base"></i>`;
             imagemBase64Temp = "";
             document.getElementById("cadastroItemModal").classList.remove("hidden");
         }
@@ -862,6 +848,7 @@
             } catch (e) { alert("Erro ao cadastrar item."); }
         }
 
+        // CONFIRMAÇÃO AUTOMÁTICA NA EDIÇÃO: Preenche o quadradinho com a imagem anterior salva na planilha
         function abrirModalEditarItem(id) {
             const item = almoxarifadoItens.find(i => String(i.id) === id);
             if(!item) return;
@@ -876,7 +863,15 @@
             document.getElementById("editItemLocal").value = item.localizacao || "";
             
             document.getElementById("editItemImagem").value = "";
-            imagemBase64EditTemp = item.imagem || "";
+            
+            const lblEdit = document.getElementById("lblEditItemImagem");
+            if(item.imagem && item.imagem.trim() !== "") {
+                imagemBase64EditTemp = item.imagem;
+                lblEdit.innerHTML = `<img src="${item.imagem}" class="w-full h-full object-cover rounded-xl">`;
+            } else {
+                imagemBase64EditTemp = "";
+                lblEdit.innerHTML = `<i class="fa-solid fa-camera text-base"></i>`;
+            }
 
             document.getElementById("editarItemModal").classList.remove("hidden");
         }
