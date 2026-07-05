@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Operacional - Controle de Manutenção</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .nav-card { transition: transform .15s ease, box-shadow .15s ease; }
+        .nav-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -8px rgba(15,23,42,.18); }
+        .fade-in { animation: fadeIn .2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px);} to { opacity: 1; transform: translateY(0);} }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+    <header class="bg-slate-900 text-white shadow-md border-b border-slate-700 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <button id="btnVoltar" onclick="voltar()" class="hidden p-2 rounded-lg hover:bg-slate-800 mr-1">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="p-2 bg-white rounded-lg flex items-center justify-center">
+                    <img src="data:image/png;base64,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" alt="Grupo TBX" class="h-8 w-auto">
+                </div>
+                <div>
+                    <h1 id="headerTitle" class="font-bold">Checklist de Manutenção</h1>
+                    <p class="text-[10px] text-slate-400">Grupo TBX · Sincronizado com Google Sheets</p>
+                </div>
+            </div>
+            <button onclick="toggleConfigModal(true)" class="bg-slate-800 border border-slate-700 text-xs py-2 px-4 rounded-lg hover:bg-slate-700">Configurar Conexão</button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
+        <div id="apiStatusAlert" class="mb-6 p-4 rounded-xl border flex items-center justify-between text-xs bg-amber-50 border-amber-200 text-amber-800">
+            <span>Atenção: Configure a URL da sua API para começar.</span>
+        </div>
+
+        <div id="loadingIndicator" class="hidden text-center py-12">
+            <i class="fa-solid fa-circle-notch animate-spin text-3xl text-blue-600"></i>
+        </div>
+
+        <!-- ==================== HOME ==================== -->
+        <div id="view-home" class="fade-in hidden">
+            <div id="pendenciasBanner" class="hidden mb-6 p-4 rounded-xl border bg-red-50 border-red-200 text-red-800 flex items-start gap-3 text-sm">
+                <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
+                <div>
+                    <p class="font-bold" id="pendenciasTitulo">Você tem checklists pendentes hoje</p>
+                    <p class="text-xs text-red-700" id="pendenciasDetalhe"></p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <button onclick="abrirModuloChecklist()" class="nav-card text-left bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-4">
+                        <i class="fa-solid fa-clipboard-check text-xl"></i>
+                    </div>
+                    <h2 class="font-bold text-slate-800 mb-1">Checklist de Máquinas e Equipamentos</h2>
+                    <p class="text-xs text-slate-500">Verificações por setor e periodicidade, com aviso automático de pendências.</p>
+                </button>
+
+                <button onclick="abrirModuloAlmoxarifado()" class="nav-card text-left bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4">
+                        <i class="fa-solid fa-boxes-stacked text-xl"></i>
+                    </div>
+                    <h2 class="font-bold text-slate-800 mb-1">Almoxarifado Técnico</h2>
+                    <p class="text-xs text-slate-500">Controle de peças e insumos de manutenção: estoque, entradas e saídas.</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== CHECKLIST: SELECIONAR SETOR ==================== -->
+        <div id="view-checklist-setor" class="fade-in hidden">
+            <h2 class="text-sm font-bold text-slate-500 uppercase mb-4">Selecione o Setor</h2>
+            <div id="setorCards" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- ==================== CHECKLIST: SELECIONAR PERIODICIDADE ==================== -->
+        <div id="view-checklist-periodo" class="fade-in hidden">
+            <h2 class="text-sm font-bold text-slate-500 uppercase mb-4">
+                Setor: <span id="periodoSetorLabel" class="text-slate-700"></span> — Selecione a Periodicidade
+            </h2>
+            <div id="periodoCards" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- ==================== CHECKLIST: ITENS ==================== -->
+        <div id="view-checklist-itens" class="fade-in hidden">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-bold text-slate-500 uppercase">
+                    <span id="itensSetorLabel"></span> · <span id="itensPeriodoLabel"></span>
+                </h2>
+            </div>
+            <div id="checklistContainer" class="space-y-6"></div>
+
+            <div class="mt-8 pt-4 border-t border-slate-200 flex justify-end">
+                <button onclick="salvarChecklist()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Enviar Itens Pendentes
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== ALMOXARIFADO ==================== -->
+        <div id="view-almoxarifado" class="fade-in hidden">
+            <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-5">
+                <div class="flex-grow flex gap-3">
+                    <input type="text" id="almoxSearch" oninput="renderAlmoxarifadoLista()" placeholder="Buscar item..." class="w-full sm:max-w-xs bg-white border rounded-lg px-3 py-2 text-sm">
+                    <select id="almoxCategoriaFilter" onchange="renderAlmoxarifadoLista()" class="bg-white border rounded-lg px-3 py-2 text-sm"></select>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="abrirModalCadastroItem()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Novo Item
+                    </button>
+                    <button onclick="abrirModalMovimentacao()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2">
+                        <i class="fa-solid fa-right-left"></i> Movimentar
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 text-[10px] uppercase text-slate-500">
+                        <tr>
+                            <th class="p-3">Item</th>
+                            <th class="p-3">Categoria</th>
+                            <th class="p-3">Qtd.</th>
+                            <th class="p-3">Mínimo</th>
+                            <th class="p-3">Local</th>
+                            <th class="p-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="almoxarifadoTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== MODAL: CONFIG ==================== -->
+    <div id="configModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6">
+            <h3 class="font-bold mb-4">Conexão do Google Sheets</h3>
+            <input type="text" id="apiInputUrl" class="w-full border rounded-lg p-2.5 mb-4 text-xs" placeholder="Cole a URL do Apps Script aqui">
+            <div class="flex gap-2">
+                <button onclick="toggleConfigModal(false)" class="flex-1 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm">Cancelar</button>
+                <button onclick="salvarConfigUrl()" class="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm">Salvar Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: MOVIMENTAÇÃO DE ESTOQUE ==================== -->
+    <div id="movimentacaoModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6">
+            <h3 class="font-bold mb-4">Registrar Movimentação</h3>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Item</label>
+            <select id="movItemSelect" class="w-full border rounded-lg p-2.5 mb-3 text-sm"></select>
+
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tipo</label>
+            <select id="movTipo" class="w-full border rounded-lg p-2.5 mb-3 text-sm">
+                <option value="Entrada">Entrada</option>
+                <option value="Saída">Saída</option>
+            </select>
+
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Quantidade</label>
+            <input type="number" min="1" id="movQuantidade" class="w-full border rounded-lg p-2.5 mb-3 text-sm">
+
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Responsável</label>
+            <input type="text" id="movResponsavel" class="w-full border rounded-lg p-2.5 mb-3 text-sm" placeholder="Nome">
+
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Motivo / OBS</label>
+            <input type="text" id="movMotivo" class="w-full border rounded-lg p-2.5 mb-4 text-sm" placeholder="Ex: reposição, uso em OS 123...">
+
+            <div class="flex gap-2">
+                <button onclick="fecharModalMovimentacao()" class="flex-1 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm">Cancelar</button>
+                <button onclick="confirmarMovimentacao()" class="flex-1 py-2 bg-emerald-600 text-white rounded-lg text-sm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: CADASTRO DE ITEM ==================== -->
+    <div id="cadastroItemModal" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6">
+            <h3 class="font-bold mb-4">Cadastrar Novo Item</h3>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nome do Item</label>
+            <input type="text" id="novoItemNome" class="w-full border rounded-lg p-2.5 mb-3 text-sm">
+
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Categoria</label>
+                    <input type="text" id="novoItemCategoria" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Ex: Rolamentos">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Unidade</label>
+                    <input type="text" id="novoItemUnidade" class="w-full border rounded-lg p-2.5 text-sm" placeholder="un, m, L...">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Qtd. Inicial</label>
+                    <input type="number" min="0" id="novoItemQuantidade" class="w-full border rounded-lg p-2.5 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Estoque Mínimo</label>
+                    <input type="number" min="0" id="novoItemMinimo" class="w-full border rounded-lg p-2.5 text-sm">
+                </div>
+            </div>
+
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Localização</label>
+            <input type="text" id="novoItemLocal" class="w-full border rounded-lg p-2.5 mb-4 text-sm" placeholder="Ex: Prateleira A3">
+
+            <div class="flex gap-2">
+                <button onclick="fecharModalCadastroItem()" class="flex-1 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm">Cancelar</button>
+                <button onclick="confirmarCadastroItem()" class="flex-1 py-2 bg-slate-800 text-white rounded-lg text-sm">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================= ESTADO GLOBAL =================
+        let API_URL = localStorage.getItem("checklist_google_api_url") || "";
+        let checklistItens = [];
+        let checklistStatus = [];
+        let almoxarifadoItens = [];
+
+        let currentView = "home";
+        let historicoViews = [];
+        let setorAtual = null;
+        let periodoAtual = null;
+
+        const SETORES_PADRAO = ["Produção", "Setup", "Manutenção"];
+
+        window.onload = () => {
+            if (API_URL) {
+                document.getElementById("apiStatusAlert").classList.add("hidden");
+                carregarTudo();
+            } else {
+                mostrarView("home");
+                toggleConfigModal(true);
+            }
+        };
+
+        async function carregarTudo() {
+            toggleLoading(true);
+            try {
+                await Promise.all([carregarChecklistDados(), carregarAlmoxarifadoDados()]);
+                mostrarView("home");
+                atualizarBannerPendencias();
+            } catch (e) {
+                alert("Erro ao carregar dados. Verifique a URL da API.");
+            }
+            toggleLoading(false);
+        }
+
+        async function carregarChecklistDados() {
+            const res = await fetch(`${API_URL}?action=carregarItens`);
+            const data = await res.json();
+            checklistItens = data.itens || [];
+            checklistStatus = data.status || [];
+        }
+
+        async function carregarAlmoxarifadoDados() {
+            const res = await fetch(`${API_URL}?action=carregarAlmoxarifado`);
+            almoxarifadoItens = await res.json();
+        }
+
+        // ================= NAVEGAÇÃO =================
+        function mostrarView(nome, empilhar = false) {
+            if (empilhar) historicoViews.push(currentView);
+            currentView = nome;
+
+            document.querySelectorAll("main > div[id^='view-']").forEach(v => v.classList.add("hidden"));
+            document.getElementById(`view-${nome}`).classList.remove("hidden");
+
+            document.getElementById("btnVoltar").classList.toggle("hidden", historicoViews.length === 0);
+
+            const titulos = {
+                "home": "Checklist de Manutenção",
+                "checklist-setor": "Checklist · Setor",
+                "checklist-periodo": "Checklist · Periodicidade",
+                "checklist-itens": "Checklist · Itens",
+                "almoxarifado": "Almoxarifado Técnico"
+            };
+            document.getElementById("headerTitle").textContent = titulos[nome] || "Checklist de Manutenção";
+
+            if (nome === "home") atualizarBannerPendencias();
+            if (nome === "checklist-setor") renderSetorCards();
+            if (nome === "almoxarifado") renderAlmoxarifadoView();
+        }
+
+        function voltar() {
+            const anterior = historicoViews.pop();
+            if (anterior) mostrarView(anterior, false);
+        }
+
+        function abrirModuloChecklist() { mostrarView("checklist-setor", true); }
+        function abrirModuloAlmoxarifado() { mostrarView("almoxarifado", true); }
+
+        // ================= PENDÊNCIAS (HOME) =================
+        function atualizarBannerPendencias() {
+            const banner = document.getElementById("pendenciasBanner");
+            const vencidos = checklistStatus.filter(s => s.vencido);
+            if (vencidos.length === 0) {
+                banner.classList.add("hidden");
+                return;
+            }
+            banner.classList.remove("hidden");
+            document.getElementById("pendenciasTitulo").textContent =
+                `Você tem ${vencidos.length} checklist(s) pendente(s) ou atrasado(s)`;
+            const exemplos = vencidos.slice(0, 3).map(v => `${v.maquina} (${v.periodicidade})`).join(", ");
+            document.getElementById("pendenciasDetalhe").textContent =
+                exemplos + (vencidos.length > 3 ? ` e mais ${vencidos.length - 3}...` : "");
+        }
+
+        // ================= CHECKLIST: SETOR =================
+        function renderSetorCards() {
+            const setoresNaBase = [...new Set(checklistItens.map(i => i.setor))];
+            const setores = setoresNaBase.length ? setoresNaBase : SETORES_PADRAO;
+            const container = document.getElementById("setorCards");
+            container.innerHTML = "";
+
+            setores.forEach(setor => {
+                const pendentesDoSetor = checklistStatus.filter(s => s.setor === setor && s.vencido).length;
+                const badge = pendentesDoSetor > 0
+                    ? `<span class="inline-block mt-3 text-[10px] font-bold bg-red-100 text-red-700 px-2 py-1 rounded-full">${pendentesDoSetor} pendente(s)</span>`
+                    : `<span class="inline-block mt-3 text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Em dia</span>`;
+
+                container.innerHTML += `
+                    <button onclick="selecionarSetor('${setor.replace(/'/g, "\\'")}')" class="nav-card text-left bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                        <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
+                            <i class="fa-solid fa-industry"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800">${setor}</h3>
+                        ${badge}
+                    </button>`;
+            });
+        }
+
+        function selecionarSetor(setor) {
+            setorAtual = setor;
+            document.getElementById("periodoSetorLabel").textContent = setor;
+            renderPeriodoCards(setor);
+            mostrarView("checklist-periodo", true);
+        }
+
+        // ================= CHECKLIST: PERIODICIDADE =================
+        function renderPeriodoCards(setor) {
+            const periodos = [...new Set(checklistItens.filter(i => i.setor === setor).map(i => i.periodicidade))];
+            const container = document.getElementById("periodoCards");
+            container.innerHTML = "";
+
+            periodos.forEach(periodo => {
+                const statusDoGrupo = checklistStatus.filter(s => s.setor === setor && s.periodicidade === periodo);
+                const vencidos = statusDoGrupo.filter(s => s.vencido).length;
+                const total = statusDoGrupo.length;
+
+                let badge;
+                if (vencidos > 0) {
+                    badge = `<span class="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-1 rounded-full">${vencidos} de ${total} atrasado(s)</span>`;
+                } else {
+                    badge = `<span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Tudo em dia</span>`;
+                }
+
+                container.innerHTML += `
+                    <button onclick="selecionarPeriodo('${periodo.replace(/'/g, "\\'")}')" class="nav-card text-left bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-800">${periodo}</h3>
+                            <p class="text-xs text-slate-500 mt-1">${total} máquina(s) neste grupo</p>
+                        </div>
+                        ${badge}
+                    </button>`;
+            });
+        }
+
+        function selecionarPeriodo(periodo) {
+            periodoAtual = periodo;
+            document.getElementById("itensSetorLabel").textContent = setorAtual;
+            document.getElementById("itensPeriodoLabel").textContent = periodo;
+            renderChecklistItensView();
+            mostrarView("checklist-itens", true);
+        }
+
+        // ================= CHECKLIST: ITENS =================
+        function getStatusInfo(maquina, periodicidade) {
+            return checklistStatus.find(s => s.maquina === maquina && s.periodicidade === periodicidade);
+        }
+
+        function badgeStatusHtml(statusInfo) {
+            if (!statusInfo || !statusInfo.ultimoRegistro) {
+                return `<span class="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-1 rounded-full">Nunca feito</span>`;
+            }
+            if (statusInfo.vencido) {
+                return `<span class="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-1 rounded-full">Atrasado (${statusInfo.diasDesde}d)</span>`;
+            }
+            if (statusInfo.diasRestantes <= 1) {
+                return `<span class="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-1 rounded-full">Vence hoje/amanhã</span>`;
+            }
+            return `<span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Em dia</span>`;
+        }
+
+        function renderChecklistItensView() {
+            const container = document.getElementById("checklistContainer");
+            container.innerHTML = "";
+
+            const filtrados = checklistItens.filter(x => x.setor === setorAtual && x.periodicidade === periodoAtual);
+            const agrupado = {};
+            filtrados.forEach(d => {
+                if (!agrupado[d.maquina]) agrupado[d.maquina] = [];
+                agrupado[d.maquina].push(d);
+            });
+
+            for (let maq in agrupado) {
+                const statusInfo = getStatusInfo(maq, periodoAtual);
+                let html = `
+                    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                        <div class="bg-slate-800 text-white px-4 py-3 font-bold flex items-center justify-between">
+                            <span>${maq}</span>
+                            ${badgeStatusHtml(statusInfo)}
+                        </div>
+                        <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-[10px] uppercase text-slate-500">
+                                <tr><th class="p-3">Item / Instrução</th><th class="p-3">Operador</th><th class="p-3">Status</th><th class="p-3">OBS</th><th class="p-3">Ação</th></tr>
+                            </thead>
+                            <tbody>`;
+                agrupado[maq].forEach(item => {
+                    html += `
+                        <tr class="row-check" data-maquina="${maq}" data-item="${item.item}">
+                            <td class="p-3 text-xs font-medium">
+                                ${item.item}
+                                ${item.obs ? `<div class="mt-1 text-[10px] text-blue-700 italic bg-blue-50 p-1 rounded">Obs: ${item.obs}</div>` : ''}
+                            </td>
+                            <td class="p-3"><input type="text" class="operador-inp w-full border rounded p-1 text-xs" placeholder="Nome"></td>
+                            <td class="p-3"><select class="status-sel border rounded p-1 text-xs"><option value="OK">OK</option><option value="Problema">Problema</option></select></td>
+                            <td class="p-3"><input type="text" class="obs-inp w-full border rounded p-1 text-xs" placeholder="Descreva problemas..."></td>
+                            <td class="p-3">
+                                <button onclick="registrarItemChecklist(this)" class="registrar-btn bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg flex items-center gap-1 whitespace-nowrap">
+                                    <i class="fa-solid fa-paper-plane"></i> Registrar
+                                </button>
+                            </td>
+                        </tr>`;
+                });
+                html += `</tbody></table></div></div>`;
+                container.innerHTML += html;
+            }
+        }
+
+        function coletarDadosDaLinha(row) {
+            return {
+                maquina: row.getAttribute("data-maquina"),
+                item: row.getAttribute("data-item"),
+                setor: setorAtual,
+                periodicidade: periodoAtual,
+                status: row.querySelector(".status-sel").value,
+                operador: row.querySelector(".operador-inp").value,
+                obs: row.querySelector(".obs-inp").value
+            };
+        }
+
+        // Diária/Intradiária: pode ser registrado várias vezes até fechar 24h
+        function ehPeriodicidadeDiaria(periodicidade) {
+            const normalizado = (periodicidade || "")
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+            return normalizado === "diaria" || normalizado.includes("intradi");
+        }
+
+        function marcarLinhaComoRegistrada(row, btn) {
+            row.classList.remove("row-check");
+            row.classList.add("bg-emerald-50");
+            row.dataset.registrado = "true";
+
+            row.querySelectorAll("input, select").forEach(el => el.disabled = true);
+
+            btn.disabled = true;
+            btn.classList.remove("bg-blue-600", "hover:bg-blue-700");
+            btn.classList.add("bg-emerald-600", "cursor-default");
+            btn.innerHTML = `<i class="fa-solid fa-check"></i> Registrado`;
+        }
+
+        // Para Diária/Intradiária: não trava a linha, só limpa os campos e
+        // deixa o botão pronto pra um novo registro dentro das mesmas 24h
+        function prepararProximoRegistroDiario(row, btn, operador) {
+            const agora = new Date();
+            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            let nota = row.querySelector(".ultimo-registro-nota");
+            if (!nota) {
+                nota = document.createElement("div");
+                nota.className = "ultimo-registro-nota mt-1 text-[10px] text-emerald-700 font-semibold";
+                row.querySelector("td").appendChild(nota);
+            }
+            nota.textContent = `Último registro hoje: ${hora} · ${operador}`;
+
+            row.querySelector(".operador-inp").value = "";
+            row.querySelector(".status-sel").value = "OK";
+            row.querySelector(".obs-inp").value = "";
+
+            btn.disabled = false;
+            btn.classList.remove("bg-blue-600", "hover:bg-blue-700");
+            btn.classList.add("bg-amber-500", "hover:bg-amber-600");
+            btn.innerHTML = `<i class="fa-solid fa-rotate"></i> Registrar Novamente`;
+        }
+
+        // Registra IMEDIATAMENTE o item daquela linha, assim que preenchido
+        async function registrarItemChecklist(btn) {
+            const row = btn.closest("tr");
+            const operador = row.querySelector(".operador-inp").value.trim();
+
+            if (!operador) {
+                alert("Informe o nome do operador antes de registrar este item.");
+                return;
+            }
+
+            const dadosItem = coletarDadosDaLinha(row);
+
+            btn.disabled = true;
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i>`;
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ tipo: "checklist", dados: [dadosItem] })
+                });
+
+                if (ehPeriodicidadeDiaria(periodoAtual)) {
+                    prepararProximoRegistroDiario(row, btn, operador);
+                } else {
+                    marcarLinhaComoRegistrada(row, btn);
+                }
+            } catch (e) {
+                alert("Erro ao registrar este item. Tente novamente.");
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+            }
+        }
+
+        // Envia em lote apenas os itens que ainda NÃO foram registrados individualmente
+        async function salvarChecklist() {
+            const rows = document.querySelectorAll(".row-check:not([data-registrado='true'])");
+            if (rows.length === 0) {
+                alert("Todos os itens já foram registrados individualmente.");
+                return;
+            }
+
+            const payload = Array.from(rows).map(r => coletarDadosDaLinha(r));
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ tipo: "checklist", dados: payload })
+                });
+                alert("Itens pendentes registrados com sucesso!");
+                await carregarChecklistDados();
+                mostrarView("home", false);
+                historicoViews = [];
+                document.getElementById("btnVoltar").classList.add("hidden");
+            } catch (e) {
+                alert("Erro ao enviar checklist.");
+            }
+        }
+
+        // ================= ALMOXARIFADO =================
+        function renderAlmoxarifadoView() {
+            const categorias = [...new Set(almoxarifadoItens.map(i => i.categoria))];
+            const select = document.getElementById("almoxCategoriaFilter");
+            select.innerHTML = `<option value="">Todas as categorias</option>` +
+                categorias.map(c => `<option value="${c}">${c}</option>`).join("");
+            renderAlmoxarifadoLista();
+        }
+
+        function renderAlmoxarifadoLista() {
+            const busca = document.getElementById("almoxSearch").value.toLowerCase();
+            const categoria = document.getElementById("almoxCategoriaFilter").value;
+            const tbody = document.getElementById("almoxarifadoTbody");
+
+            const filtrados = almoxarifadoItens.filter(i => {
+                const bateBusca = i.item.toLowerCase().includes(busca);
+                const bateCategoria = !categoria || i.categoria === categoria;
+                return bateBusca && bateCategoria;
+            });
+
+            tbody.innerHTML = filtrados.map(i => `
+                <tr class="border-t border-slate-100">
+                    <td class="p-3 text-xs font-medium">${i.item}</td>
+                    <td class="p-3 text-xs text-slate-500">${i.categoria}</td>
+                    <td class="p-3 text-xs font-bold">${i.quantidade} ${i.unidade}</td>
+                    <td class="p-3 text-xs text-slate-500">${i.estoqueMinimo} ${i.unidade}</td>
+                    <td class="p-3 text-xs text-slate-500">${i.localizacao || "—"}</td>
+                    <td class="p-3">
+                        ${i.baixoEstoque
+                            ? `<span class="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-1 rounded-full">Baixo estoque</span>`
+                            : `<span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">OK</span>`}
+                    </td>
+                </tr>`).join("") || `<tr><td colspan="6" class="p-6 text-center text-xs text-slate-400">Nenhum item encontrado.</td></tr>`;
+        }
+
+        function abrirModalMovimentacao() {
+            const select = document.getElementById("movItemSelect");
+            select.innerHTML = almoxarifadoItens.map(i => `<option value="${i.id}">${i.item} (${i.quantidade} ${i.unidade} em estoque)</option>`).join("");
+            document.getElementById("movQuantidade").value = "";
+            document.getElementById("movResponsavel").value = "";
+            document.getElementById("movMotivo").value = "";
+            document.getElementById("movimentacaoModal").classList.remove("hidden");
+        }
+        function fecharModalMovimentacao() { document.getElementById("movimentacaoModal").classList.add("hidden"); }
+
+        async function confirmarMovimentacao() {
+            const id = document.getElementById("movItemSelect").value;
+            const item = almoxarifadoItens.find(i => i.id === id);
+            const quantidade = Number(document.getElementById("movQuantidade").value);
+            if (!item || !quantidade || quantidade <= 0) { alert("Informe uma quantidade válida."); return; }
+
+            const payload = {
+                id: item.id,
+                item: item.item,
+                tipo: document.getElementById("movTipo").value,
+                quantidade: quantidade,
+                responsavel: document.getElementById("movResponsavel").value,
+                motivo: document.getElementById("movMotivo").value
+            };
+
+            try {
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "movimentacao", dados: payload }) });
+                alert("Movimentação registrada!");
+                fecharModalMovimentacao();
+                await carregarAlmoxarifadoDados();
+                renderAlmoxarifadoView();
+            } catch (e) {
+                alert("Erro ao registrar movimentação.");
+            }
+        }
+
+        function abrirModalCadastroItem() {
+            ["novoItemNome","novoItemCategoria","novoItemUnidade","novoItemQuantidade","novoItemMinimo","novoItemLocal"]
+                .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("cadastroItemModal").classList.remove("hidden");
+        }
+        function fecharModalCadastroItem() { document.getElementById("cadastroItemModal").classList.add("hidden"); }
+
+        async function confirmarCadastroItem() {
+            const nome = document.getElementById("novoItemNome").value.trim();
+            if (!nome) { alert("Informe o nome do item."); return; }
+
+            const payload = {
+                item: nome,
+                categoria: document.getElementById("novoItemCategoria").value.trim(),
+                unidade: document.getElementById("novoItemUnidade").value.trim(),
+                quantidade: document.getElementById("novoItemQuantidade").value,
+                estoqueMinimo: document.getElementById("novoItemMinimo").value,
+                localizacao: document.getElementById("novoItemLocal").value.trim()
+            };
+
+            try {
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "cadastroItemEstoque", dados: payload }) });
+                alert("Item cadastrado!");
+                fecharModalCadastroItem();
+                await carregarAlmoxarifadoDados();
+                renderAlmoxarifadoView();
+            } catch (e) {
+                alert("Erro ao cadastrar item.");
+            }
+        }
+
+        // ================= UTIL =================
+        function toggleLoading(active) { document.getElementById("loadingIndicator").classList.toggle("hidden", !active); }
+        function toggleConfigModal(show) { document.getElementById("configModal").classList.toggle("hidden", !show); }
+        function salvarConfigUrl() {
+            const url = document.getElementById("apiInputUrl").value.trim();
+            if (!url) return;
+            localStorage.setItem("checklist_google_api_url", url);
+            location.reload();
+        }
+    </script>
+</body>
+</html>
