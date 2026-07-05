@@ -17,26 +17,21 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col">
 
-    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
+    <header class="bg-slate-900 text-white shadow-md border-b border-slate-700 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <button id="btnVoltar" onclick="voltar()" class="hidden p-2 rounded-lg hover:bg-slate-800 mr-1">
+                <button id="btnVoltar" onclick="voltar()" class="hidden p-2 rounded-lg hover:bg-slate-800 mr-1 transition-all">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <div class="p-2 bg-white rounded-lg flex items-center justify-center">
-                    <img src="data:image/png;base64,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8440XdXulAeO+UjTj4Sp3h++1i61IfHr41VAunyqyhGw8NTbvhae+HoRHUyXh8dul744A7+dVbPbZHF4OdpERfuBvsG14Xt2wY8plP0gBgvhcZqCyEcIT36w2nqoNDR0EJzP0TIq4aEKrdesKhyqXtJyX+Zx4Ykr+Ffjm+lvaDWuCo+LVnRzbsAtiyOK25zHZi08E8/dx0DYHYjsRnrD3CUnY1eCts67FreE6du28LV2QYgDht9Su5/iS4nUjfA9k4GFJ3zQ9rHweKOdQtv7o/7KKzsd+WC20WPc6VhMShceL27PYJUKoTZxUC7dmOTjiXeRsFtEkcbCYzUlLioN53JrXwScqXnjzsf7kdcxwe4Thn6Ipe9IVV4ZtgvZHUAYlxi4WBh6lzA+VucRX1tksHqcKPhf7MQPN5WOhGfh5IRnj4/nU4izgeBGg6Nlb4KsryOnK6coqunD6B9f8drbweHLm5O8tWb3+oK9H/7C/+7By6vXG9z0ff97of+979Mv6XN/oF/V5v/D70b+H/fv6N0O/P9yv8Pf90e/bMHUeGPob2uXp+iXfA98b/9/3fL6Y/xmR7pP/Tm/ps+s++f/5f47pN/L/+nSd970w58zpN+b3o9+bro/k6Z3MP1H039jTrDwMAw8Cw86DtggGAYWHvbhDwYLD/oPBgsPCw+7yWHRZeFhn/ZYeBiGyRwWHoZhMoeFh2GYzGHhYRgmc1haperg/+F94b/v7U0f7C/3F7b8Z7Q+3v/XwN3E9XG8zD9eH/mKYrXv2f6qD170w3/f+wveN/rL9BfT+M6N9P9z+3/H1uR9v+Lp6ZszshOnfG9/37X28EwZunfD06w+8P0f6H7oO9N0pIffv2T8wDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwDMMwE8GvA/0v5C8vU8yHWhAAAAAElFTkSuQmCC" alt="Grupo TBX" class="h-8 w-auto">
+                    <img src="data:image/png;base64,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" alt="Grupo TBX" class="h-8 w-auto">
                 </div>
                 <div>
-                    <h1 id="headerTitle" class="font-bold text-lg">Almoxarifado Técnico</h1>
+                    <h1 id="headerTitle" class="font-bold text-base">Checklist de Manutenção</h1>
                     <p class="text-[10px] text-slate-400">Grupo TBX · Sincronizado com Google Sheets</p>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
-                <button onclick="alternarModulo()" id="btnAlternarModulo" class="text-slate-300 hover:text-white text-sm font-medium flex items-center gap-1.5 transition-all">
-                    <i class="fa-solid fa-clipboard-list"></i> <span id="txtAlternarModulo">Checklist</span>
-                </button>
-                <button onclick="toggleConfigModal(true)" class="bg-slate-800 border border-slate-700 text-xs py-2 px-4 rounded-lg hover:bg-slate-700 transition-all">Configurar Conexão</button>
-            </div>
+            <button onclick="toggleConfigModal(true)" class="bg-slate-800 border border-slate-700 text-xs py-2 px-4 rounded-lg hover:bg-slate-700 transition-all">Configurar Conexão</button>
         </div>
     </header>
 
@@ -47,6 +42,51 @@
 
         <div id="loadingIndicator" class="hidden text-center py-12">
             <i class="fa-solid fa-circle-notch animate-spin text-3xl text-blue-600"></i>
+        </div>
+
+        <div id="view-home" class="fade-in hidden">
+            <div id="pendenciasBanner" class="hidden mb-6 p-4 rounded-xl border bg-red-50 border-red-200 text-red-800 flex items-start gap-3 text-sm">
+                <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
+                <div>
+                    <p class="font-bold" id="pendenciasTitulo">Você tem checklists pendentes hoje</p>
+                    <p class="text-xs text-red-700" id="pendenciasDetalhe"></p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <button onclick="abrirModuloChecklist()" class="nav-card text-left bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col items-start">
+                    <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-4 shadow-sm">
+                        <i class="fa-solid fa-clipboard-check text-xl"></i>
+                    </div>
+                    <h2 class="font-bold text-slate-800 mb-1 text-base">Checklist de Máquinas e Equipamentos</h2>
+                    <p class="text-xs text-slate-500">Verificações por setor e periodicidade, com aviso automático de pendências.</p>
+                </button>
+
+                <button onclick="abrirModuloAlmoxarifado()" class="nav-card text-left bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col items-start">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4 shadow-sm">
+                        <i class="fa-solid fa-boxes-stacked text-xl"></i>
+                    </div>
+                    <h2 class="font-bold text-slate-800 mb-1 text-base">Almoxarifado Técnico</h2>
+                    <p class="text-xs text-slate-500">Controle de peças e insumos de manutenção: estoque, entradas e saídas.</p>
+                </button>
+            </div>
+        </div>
+
+        <div id="view-checklist-setor" class="fade-in hidden">
+            <h2 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-wider">Selecione o Setor</h2>
+            <div id="setorCards" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+        </div>
+
+        <div id="view-checklist-periodo" class="fade-in hidden">
+            <h2 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-wider">
+                Setor: <span id="periodoSetorLabel" class="text-slate-700 font-bold"></span> — Selecione a Periodicidade
+            </h2>
+            <div id="periodoCards" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+        </div>
+
+        <div id="view-checklist-itens" class="fade-in hidden">
+            <h2 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-wider" id="itensTopLabel"></h2>
+            <div id="checklistContainer" class="space-y-6"></div>
         </div>
 
         <div id="view-almoxarifado" class="fade-in hidden">
@@ -83,27 +123,6 @@
                         <tbody id="almoxarifadoTbody"></tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-
-        <div id="view-checklist-root" class="fade-in hidden">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Setor</label>
-                    <select id="setorFilter" onchange="filtrarDadosChecklist()" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none"></select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Periodicidade</label>
-                    <select id="periodoFilter" onchange="filtrarDadosChecklist()" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none"></select>
-                </div>
-            </div>
-
-            <div id="checklistContainer" class="space-y-6"></div>
-
-            <div class="mt-8 pt-4 border-t border-slate-200 flex justify-end">
-                <button onclick="salvarChecklist()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Enviar Checklist
-                </button>
             </div>
         </div>
     </main>
@@ -178,7 +197,7 @@
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5 tracking-wider">Nome do Item</label>
                     <div class="flex gap-2 items-center">
                         <input type="text" id="novoItemNome" placeholder="Ex: Ventosa" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500 shadow-sm">
-                        <label for="novoItemImagem" class="cursor-pointer bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 text-slate-400 flex items-center justify-center transition-all h-[46px] w-[46px] shadow-sm">
+                        <label for="novoItemImagem" class="cursor-pointer bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 text-slate-400 flex items-center justify-center transition-all h-[46px] w-[46px] shadow-sm shadow-slate-100">
                             <i class="fa-solid fa-camera text-base"></i>
                         </label>
                         <input type="file" id="novoItemImagem" accept="image/*" class="hidden">
@@ -217,7 +236,7 @@
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5 tracking-wider">Localização</label>
                     <div class="flex gap-2 items-center">
                         <input type="text" id="novoItemLocal" placeholder="Ex: Prateleira A3" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500 shadow-sm">
-                        <button type="button" onclick="document.getElementById('novoItemLocal').value=''" class="bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 text-slate-400 flex items-center justify-center transition-all h-[46px] w-[46px] shadow-sm">
+                        <button type="button" onclick="document.getElementById('novoItemLocal').value=''" class="bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 text-slate-400 flex items-center justify-center transition-all h-[46px] w-[46px] shadow-sm shadow-slate-100">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
@@ -249,7 +268,6 @@
                         </label>
                         <input type="file" id="editItemImagem" accept="image/*" class="hidden">
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-1 pl-1">Clique no ícone da câmera para atualizar a foto da peça</p>
                 </div>
 
                 <div class="mb-4">
@@ -298,9 +316,9 @@
     </div>
 
     <div id="imageViewerModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-4 relative shadow-2xl scale-in">
+        <div class="bg-white rounded-2xl max-w-md w-full p-4 relative shadow-2xl">
             <button onclick="fecharImageViewer()" class="absolute -top-3 -right-3 bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center shadow font-bold hover:bg-slate-700">✕</button>
-            <img id="imageViewerSrc" src="" alt="Foto da Peça" class="w-full h-auto max-h-[70vh] object-contain rounded-xl">
+            <img id="imageViewerSrc" src="" alt="Foto" class="w-full h-auto max-h-[70vh] object-contain rounded-xl">
         </div>
     </div>
 
@@ -318,13 +336,20 @@
     <script>
         // ================= ESTADO GLOBAL =================
         let API_URL = localStorage.getItem("checklist_google_api_url") || "";
-        let originalDatabase = []; // Mapeado para dados do Checklist
-        let almoxarifadoItens = []; // Mapeado para dados do Almoxarifado
+        let checklistItens = [];
+        let checklistStatus = [];
+        let almoxarifadoItens = [];
+        
+        let currentView = "home";
+        let historicoViews = [];
+        let setorAtual = null;
+        let periodoAtual = null;
 
-        let currentModulo = "almoxarifado"; // Controla o roteador principal ("almoxarifado" ou "checklist")
         let imagemBase64Temp = "";
         let imagemBase64EditTemp = "";
         let imagemAtualVisualizar = "";
+
+        const SETORES_PADRAO = ["Produção", "Setup", "Manutenção"];
 
         window.onload = () => {
             configurarUploadListeners();
@@ -332,11 +357,11 @@
                 document.getElementById("apiStatusAlert").classList.add("hidden");
                 carregarTudo();
             } else {
+                mostrarView("home");
                 toggleConfigModal(true);
             }
         };
 
-        // Conversores automáticos de imagem para texto Base64 (Imagens da Peça)
         function configurarUploadListeners() {
             document.getElementById('novoItemImagem').addEventListener('change', function(e) {
                 let file = e.target.files[0];
@@ -360,53 +385,262 @@
         async function carregarTudo() {
             toggleLoading(true);
             try {
-                // Carrega ambos os módulos da API simultaneamente
-                const [resCheck, resAlmox] = await Promise.all([
-                    fetch(`${API_URL}?action=carregarItens`),
-                    fetch(`${API_URL}?action=carregarAlmoxarifado`)
-                ]);
-                
-                const dataCheck = await resCheck.json();
-                originalDatabase = dataCheck.itens || [];
-                
-                almoxarifadoItens = await resAlmox.json();
-                
-                renderizarFiltrosChecklist();
-                atualizarViewModulo();
+                await Promise.all([carregarChecklistDados(), carregarAlmoxarifadoDados()]);
+                mostrarView("home");
             } catch (e) {
-                alert("Erro ao sincronizar dados. Verifique a URL do Apps Script.");
+                alert("Erro ao carregar dados. Verifique a URL da API.");
             }
             toggleLoading(false);
         }
 
-        // Roteador dinâmico entre Almoxarifado e Checklist (Idêntico ao link de alternação)
-        function alternarModulo() {
-            currentModulo = (currentModulo === "almoxarifado") ? "checklist" : "almoxarifado";
-            atualizarViewModulo();
+        async function carregarChecklistDados() {
+            const res = await fetch(`${API_URL}?action=carregarItens`);
+            const data = await res.json();
+            checklistItens = data.itens || [];
+            checklistStatus = data.status || [];
         }
 
-        function atualizarViewModulo() {
-            const viewAlmox = document.getElementById("view-almoxarifado");
-            const viewCheck = document.getElementById("view-checklist-root");
-            const txtBtn = document.getElementById("txtAlternarModulo");
-            const title = document.getElementById("headerTitle");
+        async function carregarAlmoxarifadoDados() {
+            const res = await fetch(`${API_URL}?action=carregarAlmoxarifado`);
+            almoxarifadoItens = await res.json();
+        }
 
-            if (currentModulo === "almoxarifado") {
-                viewAlmox.classList.remove("hidden");
-                viewCheck.classList.add("hidden");
-                txtBtn.textContent = "Checklist";
-                title.textContent = "Almoxarifado Técnico";
-                renderAlmoxarifadoView();
-            } else {
-                viewAlmox.classList.add("hidden");
-                viewCheck.classList.remove("hidden");
-                txtBtn.textContent = "Almoxarifado";
-                title.textContent = "Checklist de Manutenção";
-                filtrarDadosChecklist();
+        // ================= NAVEGAÇÃO INTERNA ENTRE PROTÓTIPO DE TELAS =================
+        function mostrarView(nome, empilhar = false) {
+            if (empilhar) historicoViews.push(currentView);
+            currentView = nome;
+
+            // Esconde todas as divs e mostra apenas a selecionada
+            document.getElementById("view-home").classList.add("hidden");
+            document.getElementById("view-checklist-setor").classList.add("hidden");
+            document.getElementById("view-checklist-periodo").classList.add("hidden");
+            document.getElementById("view-checklist-itens").classList.add("hidden");
+            document.getElementById("view-almoxarifado").classList.add("hidden");
+
+            document.getElementById(`view-${nome}`).classList.remove("hidden");
+            document.getElementById("btnVoltar").classList.toggle("hidden", historicoViews.length === 0);
+
+            if (nome === "home") atualizarBannerPendencias();
+            if (nome === "checklist-setor") renderSetorCards();
+            if (nome === "almoxarifado") renderAlmoxarifadoView();
+        }
+
+        function voltar() {
+            const anterior = historicoViews.pop();
+            if (anterior) mostrarView(anterior, false);
+        }
+
+        function abrirModuloChecklist() { mostrarView("checklist-setor", true); }
+        function abrirModuloAlmoxarifado() { mostrarView("almoxarifado", true); }
+
+        // ================= MONITOR DE ALERTA DE PLANILHA =================
+        function atualizarBannerPendencias() {
+            const banner = document.getElementById("pendenciasBanner");
+            const vencidos = checklistStatus.filter(s => s.vencido);
+            if (vencidos.length === 0) {
+                banner.classList.add("hidden");
+                return;
+            }
+            banner.classList.remove("hidden");
+            document.getElementById("pendenciasTitulo").textContent = `Você tem ${vencidos.length} checklist(s) pendente(s) ou atrasado(s)`;
+            const exemplos = vencidos.slice(0, 3).map(v => `${v.maquina} (${v.periodicidade})`).join(", ");
+            document.getElementById("pendenciasDetalhe").textContent = exemplos + (vencidos.length > 3 ? ` e mais ${vencidos.length - 3}...` : "");
+        }
+
+        // ================= TELA: SELECIONAR SETOR (FOTO 2) =================
+        function renderSetorCards() {
+            const setoresNaBase = [...new Set(checklistItens.map(i => i.setor).filter(Boolean))];
+            const setores = setoresNaBase.length ? setoresNaBase : SETORES_PADRAO;
+            const container = document.getElementById("setorCards");
+            container.innerHTML = "";
+
+            setores.forEach(setor => {
+                const pendentesDoSetor = checklistStatus.filter(s => s.setor === setor && s.vencido).length;
+                const badge = pendentesDoSetor > 0
+                    ? `<span class="inline-block mt-3 text-[11px] font-semibold bg-red-100 text-red-700 px-3 py-1 rounded-full">${pendentesDoSetor} pendente(s)</span>`
+                    : `<span class="inline-block mt-3 text-[11px] font-semibold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">Em dia</span>`;
+
+                container.innerHTML += `
+                    <button onclick="selecionarSetor('${setor.replace(/'/g, "\\'")}')" class="nav-card text-left bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col items-start w-full">
+                        <div class="w-11 h-11 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-industry text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-lg">${setor}</h3>
+                        ${badge}
+                    </button>`;
+            });
+        }
+
+        function selecionarSetor(setor) {
+            setorAtual = setor;
+            document.getElementById("periodoSetorLabel").textContent = setor.toUpperCase();
+            renderPeriodoCards(setor);
+            mostrarView("checklist-periodo", true);
+        }
+
+        // ================= TELA: SELECIONAR PERIODICIDADE (FOTO 3) =================
+        function renderPeriodoCards(setor) {
+            const periodos = [...new Set(checklistItens.filter(i => i.setor === setor).map(i => i.periodicidade).filter(Boolean))];
+            const container = document.getElementById("periodoCards");
+            container.innerHTML = "";
+
+            periodos.forEach(periodo => {
+                const statusDoGrupo = checklistStatus.filter(s => s.setor === setor && s.periodicidade === periodo);
+                const vencidos = statusDoGrupo.filter(s => s.vencido).length;
+                const total = statusDoGrupo.length;
+
+                let badge = vencidos > 0
+                    ? `<span class="text-xs font-bold bg-red-100 text-red-700 px-3 py-1 rounded-full">${vencidos} de ${total} atrasado(s)</span>`
+                    : `<span class="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">Tudo em dia</span>`;
+
+                container.innerHTML += `
+                    <button onclick="selecionarPeriodo('${periodo.replace(/'/g, "\\'")}')" class="nav-card text-left bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center justify-between w-full">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base mb-1">${periodo}</h3>
+                            <p class="text-xs text-slate-400 font-medium">${total} máquina(s) neste grupo</p>
+                        </div>
+                        ${badge}
+                    </button>`;
+            });
+        }
+
+        function selecionarPeriodo(periodo) {
+            periodoAtual = periodo;
+            document.getElementById("itensTopLabel").textContent = `${setorAtual.toUpperCase()} · ${periodo.toUpperCase()}`;
+            renderChecklistItensView();
+            mostrarView("checklist-itens", true);
+        }
+
+        // ================= TELA: LISTAGEM DE CHECAGEM (FOTO 4 E 5) =================
+        function renderChecklistItensView() {
+            const container = document.getElementById("checklistContainer");
+            container.innerHTML = "";
+
+            const filtrados = checklistItens.filter(x => x.setor === setorAtual && x.periodicidade === periodoAtual);
+            const agrupado = {};
+            filtrados.forEach(d => {
+                if (!agrupado[d.maquina]) agrupado[d.maquina] = [];
+                agrupado[d.maquina].push(d);
+            });
+
+            for (let maq in agrupado) {
+                const statusInfo = getStatusInfo(maq, periodoAtual);
+                let html = `
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-slate-800 text-white px-5 py-3.5 font-bold flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm font-bold tracking-wide">${maq}</span>
+                                <button onclick="imprimirFolhaPapel('${maq.replace(/'/g, "\\'")}')" class="bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-medium py-1 px-3 rounded-md transition-all flex items-center gap-1">
+                                    <i class="fa-solid fa-print"></i> Imprimir p/ Papel
+                                </button>
+                            </div>
+                            ${badgeStatusHtml(statusInfo)}
+                        </div>
+                        <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400 tracking-wider border-b border-slate-100">
+                                <tr>
+                                    <th class="p-4 pl-5">Item / Instrução</th>
+                                    <th class="p-4 w-48">Operador</th>
+                                    <th class="p-4 w-32">Status</th>
+                                    <th class="p-4">OBS</th>
+                                    <th class="p-4 pr-5 text-center w-36">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50">`;
+                agrupado[maq].forEach(item => {
+                    html += `
+                        <tr class="row-check hover:bg-slate-50/20 transition-all" data-maquina="${maq}" data-item="${item.item}">
+                            <td class="p-4 pl-5 text-xs font-semibold text-slate-800">
+                                <div class="item-text-container">${item.item}</div>
+                                ${item.obs ? `<div class="mt-1.5 text-[11px] text-blue-700 italic bg-blue-50/80 px-2.5 py-1 rounded-lg font-medium w-fit">Obs: ${item.obs}</div>` : ''}
+                            </td>
+                            <td class="p-4"><input type="text" class="operador-inp w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500" placeholder="Nome"></td>
+                            <td class="p-4">
+                                <select class="status-sel w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-blue-500">
+                                    <option value="OK">OK</option>
+                                    <option value="Problema">Problema</option>
+                                </select>
+                            </td>
+                            <td class="p-4"><input type="text" class="obs-inp w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500" placeholder="Descreva problemas..."></td>
+                            <td class="p-4 pr-5 text-center">
+                                <button onclick="registrarItemIndividualChecklist(this)" class="registrar-btn w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-1 shadow-sm transition-all">
+                                    <i class="fa-solid fa-paper-plane text-[10px]"></i> Registrar
+                                </button>
+                            </td>
+                        </tr>`;
+                });
+                html += `</tbody></table></div></div>`;
+                container.innerHTML += html;
             }
         }
 
-        // ================= LÓGICA DO ALMOXARIFADO (FOTO 1, 2, 3) =================
+        function coletarDadosDaLinha(row) {
+            return {
+                maquina: row.getAttribute("data-maquina"),
+                item: row.getAttribute("data-item"),
+                setor: setorAtual,
+                periodicidade: periodoAtual,
+                status: row.querySelector(".status-sel").value,
+                operador: row.querySelector(".operador-inp").value,
+                obs: row.querySelector(".obs-inp").value
+            };
+        }
+
+        // Envio individual em tempo real com mudança de botão (FOTO 4 E 5)
+        async function registrarItemIndividualChecklist(btn) {
+            const row = btn.closest("tr");
+            const op = row.querySelector(".operador-inp").value.trim();
+
+            if (!op) { alert("Informe o nome do operador antes de registrar este item."); return; }
+
+            const dadosItem = coletarDadosDaLinha(row);
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>`;
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ tipo: "checklist", dados: [dadosItem] })
+                });
+
+                if (ehPeriodicidadeDiaria(periodoAtual)) {
+                    // Diária/Intradiária: Desenha o carimbo de data inferior e muda para botão Laranja (FOTO 5)
+                    const agora = new Date();
+                    const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    
+                    let txtCell = row.querySelector("td");
+                    let notaExistente = txtCell.querySelector(".lbl-carimbo-time");
+                    if(notaExistente) notaExistente.remove();
+                    
+                    let carimbo = document.createElement("div");
+                    carimbo.className = "lbl-carimbo-time mt-1.5 text-[11px] text-emerald-700 font-semibold";
+                    carimbo.innerHTML = `Último registro hoje: ${hora} · <span class="capitalize">${op}</span>`;
+                    txtCell.appendChild(carimbo);
+
+                    // Reseta os inputs do operador e observações
+                    row.querySelector(".operador-inp").value = "";
+                    row.querySelector(".status-sel").value = "OK";
+                    row.querySelector(".obs-inp").value = "";
+
+                    btn.disabled = false;
+                    btn.className = "registrar-btn w-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-1 shadow-sm transition-all";
+                    btn.innerHTML = `<i class="fa-solid fa-arrows-rotate text-[10px]"></i> Registrar Novamente`;
+                } else {
+                    // Outras frequências travam e congelam em verde permanentemente
+                    row.querySelectorAll("input, select").forEach(el => el.disabled = true);
+                    btn.className = "w-full bg-emerald-600 text-white text-xs font-bold py-2 px-4 rounded-xl cursor-default flex items-center justify-center gap-1";
+                    btn.innerHTML = `<i class="fa-solid fa-check"></i> Registrado`;
+                }
+            } catch (e) {
+                alert("Falha de conexão com a planilha.");
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-paper-plane text-[10px]"></i> Registrar`;
+            }
+        }
+
+        // ================= ALMOXARIFADO TÉCNICO =================
         function renderAlmoxarifadoView() {
             const categorias = [...new Set(almoxarifadoItens.map(i => i.categoria).filter(Boolean))];
             const select = document.getElementById("almoxCategoriaFilter");
@@ -426,7 +660,6 @@
                 return bateBusca && bateCategoria;
             });
 
-            // Monta as linhas da tabela idênticas ao layout da Foto 1
             tbody.innerHTML = filtrados.map(i => `
                 <tr class="border-t border-slate-100 hover:bg-slate-50/50 transition-all">
                     <td class="p-4">
@@ -442,12 +675,12 @@
                     <td class="p-4 text-sm font-bold text-slate-700">${i.quantidade || 0} ${i.unidade || 'un'}</td>
                     <td class="p-4 text-xs text-slate-400 font-medium">${i.localizacao || "—"}</td>
                     <td class="p-4">
-                        <div class="flex items-center justify-center gap-3">
+                        <div class="flex items-center justify-end gap-4 pr-2">
                             <button onclick="abrirModalMovimentacaoEspecifica('${i.id}')" class="text-emerald-600 hover:text-emerald-800 text-base transition-all" title="Movimentar">
-                                <i class="fa-solid fa-arrows-rotate"></i>
+                                <i class="fa-solid fa-arrows-rotate text-sm"></i>
                             </button>
                             <button onclick="abrirModalEditarItem('${i.id}')" class="text-slate-400 hover:text-slate-600 text-base transition-all" title="Editar">
-                                <i class="fa-solid fa-pen text-sm"></i>
+                                <i class="fa-solid fa-pen text-xs"></i>
                             </button>
                         </div>
                     </td>
@@ -481,7 +714,6 @@
 
         function fecharModalMovimentacao() { document.getElementById("movimentacaoModal").classList.add("hidden"); }
 
-        // Sincroniza a caixa informativa da movimentação de estoque (Idêntico à Foto 2)
         function atualizarInfoMovimentacao() {
             const id = document.getElementById("movItemSelect").value;
             const item = almoxarifadoItens.find(i => String(i.id) === id);
@@ -494,19 +726,18 @@
                 txtLoc.textContent = item.localizacao ? item.localizacao : "Sem localização cadastrada.";
                 
                 if(item.imagem && item.imagem.trim() !== "") {
-                    imagemAnexoModal = item.imagem;
+                    imagemAtualVisualizar = item.imagem;
                     btnImg.classList.remove("opacity-50", "pointer-events-none");
                 } else {
-                    imagemAnexoModal = "";
+                    imagemAtualVisualizar = "";
                     btnImg.classList.add("opacity-50", "pointer-events-none");
                 }
             }
         }
 
-        let imagemAnexoModal = "";
         function visualizarImagemItem() {
-            if(imagemAnexoModal) {
-                document.getElementById("imageViewerSrc").src = imagemAnexoModal;
+            if(imagemAtualVisualizar) {
+                document.getElementById("imageViewerSrc").src = imagemAtualVisualizar;
                 document.getElementById("imageViewerModal").classList.remove("hidden");
             }
         }
@@ -619,133 +850,10 @@
             } catch (e) { alert("Erro ao salvar alterações."); }
         }
 
-        // ================= LÓGICA DO CHECKLIST (IMPRESSÃO INTELIGENTE) =================
-        function renderizarFiltrosChecklist() {
-            const setores = [...new Set(originalDatabase.map(i => i.setor).filter(Boolean))];
-            const periodos = [...new Set(originalDatabase.map(i => i.periodicidade).filter(Boolean))];
-            
-            document.getElementById('setorFilter').innerHTML = setores.map(s => `<option value="${s}">${s}</option>`).join('');
-            document.getElementById('periodoFilter').innerHTML = periodos.map(p => `<option value="${p}">${p}</option>`).join('');
-        }
-
-        function filtrarDadosChecklist() {
-            const set = document.getElementById("setorFilter").value;
-            const per = document.getElementById("periodoFilter").value;
-            const container = document.getElementById("checklistContainer");
-            container.innerHTML = "";
-
-            if (!set || !per) return;
-
-            const filtrados = originalDatabase.filter(x => x.setor === set && x.periodicidade === per);
-            const agrupado = {};
-            filtrados.forEach(d => {
-                if(!agrupado[d.maquina]) agrupado[d.maquina] = [];
-                agrupado[d.maquina].push(d);
-            });
-
-            for (let maq in agrupado) {
-                let html = `
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden mb-6 border-slate-200">
-                        <div class="bg-slate-800 text-white px-4 py-3.5 font-bold flex items-center justify-between">
-                            <span class="text-sm tracking-wide">${maq}</span>
-                            <button onclick="imprimirFolhaPapel('${maq.replace(/'/g, "\\'")}')" class="bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-medium py-1 px-3 rounded-lg transition-all flex items-center gap-1 shadow-sm">
-                                <i class="fa-solid fa-print"></i> Imprimir p/ Papel
-                            </button>
-                        </div>
-                        <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400 tracking-wider border-b">
-                                <tr>
-                                    <th class="p-4">Item / Instrução</th>
-                                    <th class="p-4 w-44">Operador</th>
-                                    <th class="p-4 w-32">Status</th>
-                                    <th class="p-4">OBS</th>
-                                    <th class="p-4 text-center w-24">Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
-                agrupado[maq].forEach(item => {
-                    html += `
-                        <tr class="row-check border-b border-slate-100" data-maquina="${maq}" data-item="${item.item}">
-                            <td class="p-4 text-xs font-semibold text-slate-700">
-                                ${item.item}
-                                ${item.obs ? `<div class="mt-1 text-[10px] text-blue-700 italic bg-blue-50 p-1.5 rounded-lg font-medium">Obs: ${item.obs}</div>` : ''}
-                            </td>
-                            <td class="p-4"><input type="text" class="operador-inp w-full border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-500" placeholder="Nome"></td>
-                            <td class="p-4">
-                                <select class="status-sel w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium focus:outline-none">
-                                    <option value="OK">OK</option>
-                                    <option value="Problema">Problema</option>
-                                </select>
-                            </td>
-                            <td class="p-4"><input type="text" class="obs-inp w-full border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-500" placeholder="Descreva o problema..."></td>
-                            <td class="p-4 text-center">
-                                <button onclick="registrarItemChecklistLote(this)" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg transition-all shadow-sm">
-                                    Registrar
-                                </button>
-                            </td>
-                        </tr>`;
-                });
-                html += `</tbody></table></div></div>`;
-                container.innerHTML += html;
-            }
-        }
-
-        async function registrarItemChecklistLote(btn) {
-            const row = btn.closest("tr");
-            const op = row.querySelector(".operador-inp").value.trim();
-            if(!op) { alert("Por favor, preencha o nome do operador."); return; }
-
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i>`;
-            
-            const payload = [{
-                maquina: row.getAttribute("data-maquina"),
-                item: row.getAttribute("data-item"),
-                setor: document.getElementById("setorFilter").value,
-                periodicidade: document.getElementById("periodoFilter").value,
-                status: row.querySelector(".status-sel").value,
-                operador: op,
-                obs: row.querySelector(".obs-inp").value
-            }];
-
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "checklist", dados: payload }) });
-                row.classList.add("bg-emerald-50/60");
-                btn.className = "bg-emerald-600 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg cursor-default";
-                btn.innerHTML = `<i class="fa-solid fa-check"></i> Salvo`;
-            } catch(e) {
-                alert("Erro ao salvar.");
-                btn.disabled = false;
-                btn.textContent = "Registrar";
-            }
-        }
-
-        async function salvarChecklist() {
-            const rows = document.querySelectorAll(".row-check");
-            const payload = Array.from(rows).map(r => ({
-                maquina: r.getAttribute("data-maquina"),
-                item: r.getAttribute("data-item"),
-                setor: document.getElementById("setorFilter").value,
-                periodicidade: document.getElementById("periodoFilter").value,
-                status: r.querySelector(".status-sel").value,
-                operador: r.querySelector(".operador-inp").value,
-                obs: r.querySelector(".obs-inp").value
-            }));
-
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "checklist", dados: payload }) });
-                alert("Checklist completo enviado com sucesso!");
-                carregarTudo();
-            } catch(e) { alert("Erro ao enviar."); }
-        }
-
+        // ================= IMPRESSÃO MATRIZ DE PAPEL ADAPTÁVEL =================
         function imprimirFolhaPapel(maquina) {
-            const set = document.getElementById("setorFilter").value;
-            const per = document.getElementById("periodoFilter").value;
-            const filtrados = originalDatabase.filter(x => x.setor === set && x.periodicidade === per && x.maquina === maquina);
-            
-            const periodoNorm = (per || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+            const filtrados = checklistItens.filter(x => x.setor === setorAtual && x.periodicidade === periodoAtual && x.maquina === maquina);
+            const periodoNorm = (periodoAtual || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
             
             let cabecalhosColunas = [];
             let tituloLinhaDatas = "Datas";
@@ -796,7 +904,7 @@
                         <td colspan="${numColunas}" style="border: 1px solid #cbd5e1; padding: 6px; font-weight: 500;">
                             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
                                 <span>${item.item}</span>
-                                <span style="font-size: 10px; color: #475569; font-weight: bold; background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px;">Setor: ${set}</span>
+                                <span style="font-size: 10px; color: #475569; font-weight: bold; background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px;">Setor: ${setorAtual}</span>
                             </div>
                         </td>
                     </tr>
@@ -848,7 +956,7 @@
                 <body>
                     <table>
                         <tr><td class="main-header" style="width: 18%;">Maquina/ Equipamento</td><td colspan="${numColunas}" class="value-header">${maquina}</td></tr>
-                        <tr><td class="main-header">Periodicidade</td><td colspan="${numColunas}" class="value-header" style="font-size: 11px;">${per}</td></tr>
+                        <tr><td class="main-header">Periodicidade</td><td colspan="${numColunas}" class="value-header" style="font-size: 11px;">${periodoAtual}</td></tr>
                         <tr><td class="date-header">${tituloLinhaDatas}</td>${headerDatasHtml}</tr>
                         ${htmlRows}
                     </table>
@@ -860,12 +968,14 @@
             printWindow.document.close();
         }
 
-        // ================= CONFIGURAÇÃO EXTRA =================
+        // ================= AUXILIARES AUXILIARES =================
         function toggleLoading(active) { document.getElementById("loadingIndicator").classList.toggle("hidden", !active); }
         function toggleConfigModal(show) { document.getElementById("configModal").classList.toggle("hidden", !show); }
-        function salvarConfigUrl() { 
-            localStorage.setItem("checklist_google_api_url", document.getElementById("apiInputUrl").value.trim());
-            location.reload(); 
+        function salvarConfigUrl() {
+            const url = document.getElementById("apiInputUrl").value.trim();
+            if (!url) return;
+            localStorage.setItem("checklist_google_api_url", url);
+            location.reload();
         }
     </script>
 </body>
