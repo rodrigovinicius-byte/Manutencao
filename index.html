@@ -59,7 +59,7 @@
                         <i class="fa-solid fa-clipboard-check text-xl"></i>
                     </div>
                     <h2 class="font-bold text-slate-800 mb-1 text-base">Checklist de Máquinas e Equipamentos</h2>
-                    <p class="text-xs text-slate-500">Verificações por sector e periodicidade, com aviso automático de pendências.</p>
+                    <p class="text-xs text-slate-500">Verificações por setor e periodicidade, com aviso automático de pendências.</p>
                 </button>
 
                 <button onclick="abrirModuloAlmoxarifado()" class="nav-card text-left bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col items-start w-full">
@@ -238,7 +238,7 @@
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5 tracking-wider">Localização</label>
                     <div class="flex gap-2 items-center">
                         <input type="text" id="novoItemLocal" placeholder="Ex: Prateleira A3" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500 shadow-sm">
-                        <button type="button" onclick="document.getElementById('novoItemLocal').value=''" class="bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 text-slate-400 flex items-center justify-center transition-all h-[46px] w-[46px] shadow-sm shadow-slate-100">
+                        <button type="button" onclick="document.getElementById('novoItemLocal').value=''" class="bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 text-slate-400 flex items-center justify-center transition-all h-[46px] w-[46px] shadow-sm">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
@@ -430,9 +430,11 @@
             }
             if (nome === "checklist-periodo") {
                 document.getElementById("headerTitle").textContent = "Checklist · Periodicidade";
+                renderPeriodoCards(setorAtual);
             }
             if (nome === "checklist-itens") {
                 document.getElementById("headerTitle").textContent = "Checklist · Itens";
+                renderChecklistItensView();
             }
             if (nome === "almoxarifado") {
                 document.getElementById("headerTitle").textContent = "Almoxarifado Técnico";
@@ -462,7 +464,7 @@
             document.getElementById("pendenciasDetalhe").textContent = exemplos + (vencidos.length > 3 ? ` e mais ${vencidos.length - 3}...` : "");
         }
 
-        // ================= SELECIONAR SETOR (FOTO 2) =================
+        // ================= SELECIONAR SETOR =================
         function renderSetorCards() {
             const setoresNaBase = [...new Set(checklistItens.map(i => i.setor).filter(Boolean))];
             const setores = setoresNaBase.length ? setoresNaBase : SETORES_PADRAO;
@@ -489,11 +491,10 @@
         function selecionarSetor(setor) {
             setorAtual = setor;
             document.getElementById("periodoSetorLabel").textContent = setor.toUpperCase();
-            renderPeriodoCards(setor);
             mostrarView("checklist-periodo", true);
         }
 
-        // ================= SELECIONAR PERIODICIDADE (FOTO 3) =================
+        // ================= SELECIONAR PERIODICIDADE =================
         function renderPeriodoCards(setor) {
             const periodos = [...new Set(checklistItens.filter(i => i.setor === setor).map(i => i.periodicidade).filter(Boolean))];
             const container = document.getElementById("periodoCards");
@@ -512,7 +513,7 @@
                     <button onclick="selecionarPeriodo('${periodo.replace(/'/g, "\\'")}')" class="nav-card text-left bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center justify-between w-full">
                         <div>
                             <h3 class="font-bold text-slate-800 text-base mb-1">${periodo}</h3>
-                            <p class="text-xs text-slate-400 font-medium">${total} máquina(s) neste grupo</p>
+                            <p class="text-xs text-slate-400 font-medium">${total} máquina(s) neste groupo</p>
                         </div>
                         ${badge}
                     </button>`;
@@ -522,47 +523,25 @@
         function selecionarPeriodo(periodo) {
             periodoAtual = periodo;
             document.getElementById("itensTopLabel").textContent = `${setorAtual.toUpperCase()} · ${periodo.toUpperCase()}`;
-            renderChecklistItensView();
             mostrarView("checklist-itens", true);
         }
 
-        // ================= AUXILIARES AUXILIARES CHECKLIST =================
-        function ehPeriodicidadeDiaria(periodicidade) {
-            const normalizado = (periodicidade || "")
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-            return normalizado === "diaria" || normalizado.includes("intradi");
+        // ================= RECURSOS AUXILIARES DO CHECKLIST =================
+        function getStatusInfo(maquina, periodicidade) {
+            return checklistStatus.find(s => s.maquina === maquina && s.periodicidade === periodicidade);
         }
 
-        function marcarLinhaComoRegistrada(row, btn) {
-            row.classList.remove("row-check");
-            row.classList.add("bg-emerald-50/40");
-            row.dataset.registrado = "true";
-            row.querySelectorAll("input, select").forEach(el => el.disabled = true);
-            btn.disabled = true;
-            btn.className = "w-full bg-emerald-600 text-white text-xs font-bold py-2 px-4 rounded-xl cursor-default flex items-center justify-center gap-1 shadow-sm";
-            btn.innerHTML = `<i class="fa-solid fa-check"></i> Registrado`;
-        }
-
-        function prepararProximoRegistroDiario(row, btn, operador) {
-            const agora = new Date();
-            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-            let cell = row.querySelector("td");
-            let notaExistente = cell.querySelector(".lbl-carimbo-time");
-            if(notaExistente) notaExistente.remove();
-
-            let carimbo = document.createElement("div");
-            carimbo.className = "lbl-carimbo-time mt-1.5 text-[11px] text-emerald-700 font-semibold";
-            carimbo.innerHTML = `Último registro hoje: ${hora} · <span class="capitalize">${operador}</span>`;
-            cell.appendChild(carimbo);
-
-            row.querySelector(".operador-inp").value = "";
-            row.querySelector(".status-sel").value = "OK";
-            row.querySelector(".obs-inp").value = "";
-
-            btn.disabled = false;
-            btn.className = "registrar-btn bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-1 shadow-sm transition-all";
-            btn.innerHTML = `<i class="fa-solid fa-arrows-rotate text-[10px]"></i> Registrar Novamente`;
+        function badgeStatusHtml(statusInfo) {
+            if (!statusInfo || !statusInfo.ultimoRegistro) {
+                return `<span class="text-[11px] font-bold bg-red-100 text-red-700 px-2.5 py-1 rounded-full shadow-sm">Nunca feito</span>`;
+            }
+            if (statusInfo.vencido) {
+                return `<span class="text-[11px] font-bold bg-red-100 text-red-700 px-2.5 py-1 rounded-full shadow-sm">Atrasado (${statusInfo.diasDesde}d)</span>`;
+            }
+            if (statusInfo.diasRestantes <= 1) {
+                return `<span class="text-[11px] font-bold bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full shadow-sm">Vence hoje/amanhã</span>`;
+            }
+            return `<span class="text-[11px] font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full shadow-sm">Em dia</span>`;
         }
 
         // ================= TABELA DE CHECKLIST COMPLETA =================
@@ -629,27 +608,29 @@
             }
         }
 
+        function coletarDadosDaLinha(row) {
+            return {
+                maquina: row.getAttribute("data-maquina"),
+                item: row.getAttribute("data-item"),
+                setor: setorAtual,
+                periodicidade: periodoAtual,
+                status: row.querySelector(".status-sel").value,
+                operador: row.querySelector(".operador-inp").value,
+                obs: row.querySelector(".obs-inp").value
+            };
+        }
+
         async function registrarItemIndividualChecklist(btn) {
             const row = btn.closest("tr");
             const op = row.querySelector(".operador-inp").value.trim();
 
             if (!op) { alert("Informe o nome do operador antes de registrar este item."); return; }
 
-            const dadosItem = {
-                maquina: row.getAttribute("data-maquina"),
-                item: row.getAttribute("data-item"),
-                setor: setorAtual,
-                periodicidade: periodoAtual,
-                status: row.querySelector(".status-sel").value,
-                operador: op,
-                obs: row.querySelector(".obs-inp").value
-            };
-
+            const dadosItem = coletarDadosDaLinha(row);
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>`;
 
             try {
-                // CORREÇÃO DEFINITIVA: Envia os dados encapsulados em vetor simples para casar com o Apps Script original do banco
                 await fetch(API_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -662,7 +643,7 @@
                     marcarLinhaComoRegistrada(row, btn);
                 }
             } catch (e) {
-                alert("Falha de conexão.");
+                alert("Falha de conexão com a planilha.");
                 btn.disabled = false;
                 btn.innerHTML = `<i class="fa-solid fa-paper-plane text-[10px]"></i> Registrar`;
             }
@@ -678,13 +659,11 @@
             atualizarFiltrosEDatalist();
         }
 
-        // Reconstrói a lista suspensa (Datalist) de validação de dados em paralelo baseada na Família ativa
         function atualizarFiltrosEDatalist() {
             const categoriaSelecionada = document.getElementById("almoxCategoriaFilter").value;
             const datalist = document.getElementById("almoxDatalist");
-            document.getElementById("almoxSearch").value = ""; // Limpa a busca ao mudar a Família
+            document.getElementById("almoxSearch").value = "";
 
-            // Filtra os IDs e Nomes que pertencem apenas a esta Família para autocompletar
             const itensFiltrados = almoxarifadoItens.filter(i => !categoriaSelecionada || i.categoria === categoriaSelecionada);
             
             datalist.innerHTML = itensFiltrados.map(i => `
@@ -702,7 +681,6 @@
             let idBusca = null;
             let buscaTexto = buscaRaw.toLowerCase().trim();
 
-            // Se o usuário selecionou uma opção da validação de dados (Datalist), extrai o ID entre colchetes
             if (buscaRaw.startsWith("[") && buscaRaw.includes("]")) {
                 const partes = buscaRaw.split("]");
                 idBusca = partes[0].replace("[", "").trim();
@@ -748,6 +726,58 @@
                 </tr>`).join("") || `<tr><td colspan="7" class="p-6 text-center text-xs text-slate-400">Nenhum item localizado nesta Família.</td></tr>`;
         }
 
+        function abrirModalMovimentacao() {
+            const select = document.getElementById("movItemSelect");
+            select.innerHTML = almoxarifadoItens.map(i => `<option value="${i.id}">${i.item} (${i.quantidade || 0} ${i.unidade || 'un'} em estoque)</option>`).join("");
+            document.getElementById("movQuantidade").value = "";
+            document.getElementById("movResponsavel").value = "";
+            document.getElementById("movMotivo").value = "";
+            atualizarInfoMovimentacao();
+            document.getElementById("movimentacaoModal").classList.remove("hidden");
+        }
+
+        function abrirModalMovimentacaoEspecifica(id) {
+            abrirModalMovimentacao();
+            document.getElementById("movItemSelect").value = id;
+            atualizarInfoMovimentacao();
+        }
+
+        function fecharModalMovimentacao() { document.getElementById("movimentacaoModal").classList.add("hidden"); }
+
+        function atualizarInfoMovimentacao() {
+            const id = document.getElementById("movItemSelect").value;
+            const item = almoxarifadoItens.find(i => String(i.id) === id);
+            const txtDesc = document.getElementById("movItemDescricaoText");
+            const txtLoc = document.getElementById("movItemLocalizacaoText");
+            const btnImg = document.getElementById("btnVisualizarImagemMov");
+
+            if(item) {
+                txtDesc.textContent = item.descricao ? item.descricao : "Sem descrição cadastrada.";
+                txtLoc.textContent = item.localizacao ? item.localizacao : "Sem localização cadastrada.";
+                if(item.imagem && item.imagem.trim() !== "") {
+                    imagemAtualVisualizar = item.imagem;
+                    btnImg.classList.remove("opacity-50", "pointer-events-none");
+                } else {
+                    imagemAtualVisualizar = "";
+                    btnImg.classList.add("opacity-50", "pointer-events-none");
+                }
+            }
+        }
+
+        function visualizarImagemItem() {
+            if(imagemAtualVisualizar) {
+                document.getElementById("imageViewerSrc").src = imagemAtualVisualizar;
+                document.getElementById("imageViewerModal").classList.remove("hidden");
+            }
+        }
+        function fecharImageViewer() { document.getElementById("imageViewerModal").classList.add("hidden"); }
+
+        function abrirModalEditarItemDesdeMov() {
+            const id = document.getElementById("movItemSelect").value;
+            fecharModalMovimentacao();
+            abrirModalEditarItem(id);
+        }
+
         async function confirmarMovimentacao() {
             const id = document.getElementById("movItemSelect").value;
             const item = almoxarifadoItens.find(i => String(i.id) === id);
@@ -764,13 +794,21 @@
             };
 
             try {
-                // ENVIADO CENTRALIZADO: Registra apenas na folha central de movimentação de estoque
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "movimentacao", dados: payload }) });
-                alert("Movimentação registrada!");
+                alert("Movimentação registrada com sucesso!");
                 fecharModalMovimentacao();
                 await carregarTudo();
-            } catch (e) { alert("Erro ao salvar movimentação."); }
+            } catch (e) { alert("Erro ao registrar movimentação."); }
         }
+
+        function abrirModalCadastroItem() {
+            ["novoItemNome","novoItemDescricao","novoItemCategoria","novoItemUnidade","novoItemQuantidade","novoItemMinimo","novoItemLocal"]
+                .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("novoItemImagem").value = "";
+            imagemBase64Temp = "";
+            document.getElementById("cadastroItemModal").classList.remove("hidden");
+        }
+        function fecharModalCadastroItem() { document.getElementById("cadastroItemModal").classList.add("hidden"); }
 
         async function confirmarCadastroItem() {
             const nome = document.getElementById("novoItemNome").value.trim();
@@ -778,7 +816,6 @@
             if (!nome) { alert("Informe o nome do item."); return; }
             if (!cat) { alert("Informe a Categoria / Família da peça."); return; }
 
-            // Geração sequencial fictícia baseada em carimbo de data
             const idGerado = String(Date.now()).slice(-4);
 
             const payload = {
@@ -794,13 +831,33 @@
             };
 
             try {
-                // SALVAMENTO DUPLO AUTOMÁTICO: Cadastra o item e cria uma linha na folha central de movimentação tipo "Cadastro"
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "cadastroItemEstoque", dados: payload }) });
                 alert(`Item cadastrado com sucesso! ID Gerado: #${idGerado}`);
                 fecharModalCadastroItem();
                 await carregarTudo();
-            } catch (e) { alert("Erro ao efetuar o cadastro."); }
+            } catch (e) { alert("Erro ao cadastrar item."); }
         }
+
+        function abrirModalEditarItem(id) {
+            const item = almoxarifadoItens.find(i => String(i.id) === id);
+            if(!item) return;
+
+            document.getElementById("editItemId").value = item.id;
+            document.getElementById("editItemNome").value = item.item || "";
+            document.getElementById("editItemDescricao").value = item.descricao || "";
+            document.getElementById("editItemCategoria").value = item.categoria || "";
+            document.getElementById("editItemUnidade").value = item.unidade || "";
+            document.getElementById("editItemQuantidade").value = item.quantidade || 0;
+            document.getElementById("editItemMinimo").value = item.estoqueMinimo || 0;
+            document.getElementById("editItemLocal").value = item.localizacao || "";
+            
+            document.getElementById("editItemImagem").value = "";
+            imagemBase64EditTemp = item.imagem || "";
+
+            document.getElementById("editarItemModal").classList.remove("hidden");
+        }
+
+        function fecharModalEditarItem() { document.getElementById("editarItemModal").classList.add("hidden"); }
 
         async function confirmarEdicaoItem() {
             const id = document.getElementById("editItemId").value;
@@ -821,10 +878,10 @@
 
             try {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "editarItemEstoque", dados: payload }) });
-                alert("Alterações salvas!");
+                alert("Dados salvos com sucesso!");
                 fecharModalEditarItem();
                 await carregarTudo();
-            } catch (e) { alert("Erro ao salvar."); }
+            } catch (e) { alert("Erro ao salvar alterações."); }
         }
 
         // ================= IMPRESSÃO MATRIZ DE PAPEL ADAPTÁVEL =================
@@ -945,7 +1002,7 @@
             printWindow.document.close();
         }
 
-        // ================= FUNÇÕES EXTRA DE CONTROLE DOS MODAIS =================
+        // ================= AUXILIARES AUXILIARES =================
         function toggleLoading(active) { document.getElementById("loadingIndicator").classList.toggle("hidden", !active); }
         function toggleConfigModal(show) { document.getElementById("configModal").classList.toggle("hidden", !show); }
         function salvarConfigUrl() {
