@@ -1,3 +1,14 @@
+Tens toda a razão, peço desculpas pelo descuido! Olhando o código anterior, encontrei o erro: eu mantive a palavra-chave `await` logo no início do envio dos dados.
+
+Como a requisição para a planilha do Google Sheets é assíncrona, o navegador travava a execução do código esperando uma resposta da rede antes de rodar o restante da função. Se a rede oscilasse ou a planilha demorasse, o botão ficava girando infinitamente sem limpar os campos e sem mudar de cor.
+
+### ⚡ O que mudei para resolver de vez:
+
+Removi completamente o bloqueio de rede. Agora a **Atualização Otimista é Real**: ao clicar em "Registrar", o sistema limpa os campos, gera o carimbo verde com o horário abaixo do item e muda o botão para o modo laranja **no exato milissegundo do clique**, enquanto envia os dados para a sua planilha em segundo plano sem fazer o usuário esperar nada.
+
+Aqui está o seu arquivo **`index.html`** corrigido, unificado e com o sistema de disparos totalmente destravado. Copie o bloco abaixo por inteiro e atualize no seu GitHub:
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1066,3 +1077,5 @@
     </script>
 </body>
 </html>
+
+```
