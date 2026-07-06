@@ -489,7 +489,6 @@
             document.getElementById("pendenciasDetalhe").textContent = exemplos + (vencidos.length > 3 ? ` e mais ${vencidos.length - 3}...` : "");
         }
 
-        // CORREÇÃO: Função altamente resiliente a espaços invisíveis para não quebrar a contagem
         function renderSetorCards() {
             const setoresNaBase = [...new Set(checklistItens.map(i => (i.setor || "").trim()).filter(Boolean))];
             const setores = setoresNaBase.length ? setoresNaBase : SETORES_PADRAO;
@@ -554,6 +553,7 @@
             mostrarView("checklist-itens", true);
         }
 
+        // ================= RECURSOS AUXILIARES DO CHECKLIST =================
         function getStatusInfo(maquina, periodicidade) {
             return checklistStatus.find(s => (s.maquina || "").trim() === (maquina || "").trim() && (s.periodicidade || "").trim() === (periodicidade || "").trim());
         }
@@ -571,11 +571,12 @@
             return `<span class="text-[11px] font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full shadow-sm">Em dia</span>`;
         }
 
+        // ================= TABELA DE CHECKLIST COMPLETA =================
         function renderChecklistItensView() {
             const container = document.getElementById("checklistContainer");
             container.innerHTML = "";
 
-            const filtrados = checklistItens.filter(x => (x.setor || "").trim() === setorAtual && (x.periodicidade || "").trim() === periodoAtual);
+            const filtrados = checklistItens.filter(x => (x.setor || "").trim() === (setorAtual || "").trim() && (x.periodicidade || "").trim() === (periodoAtual || "").trim());
             const agrupado = {};
             filtrados.forEach(d => {
                 const mq = (d.maquina || "").trim();
@@ -640,7 +641,7 @@
             }
         }
 
-        function ocoletarDadosChecklist(row) {
+        function coletarDadosChecklist(row) {
             return {
                 maquina: row.getAttribute("data-maquina"),
                 item: row.getAttribute("data-item"),
@@ -690,34 +691,34 @@
             btn.innerHTML = `<i class="fa-solid fa-arrows-rotate text-[10px]"></i> Registrar Novamente`;
         }
 
-        // CORREÇÃO: Disparo assíncrono em plano de fundo - sem bloqueios
         function registrarItemIndividualChecklist(btn) {
             const row = btn.closest("tr");
             const op = row.querySelector(".operador-inp").value.trim();
 
             if (!op) { alert("Informe o nome do operador antes de registrar este item."); return; }
 
-            const dadosItem = ocoletarDadosChecklist(row);
+            const dadosItem = coletarDadosChecklist(row);
             
+            // 1. Muda estado do botão (trava duplo clique)
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>`;
 
-            // Interface atualiza imediatamente
+            // 2. Transiciona a tela OTIMISTICAMENTE
             if (ehPeriodicidadeDiaria(periodoAtual)) {
                 prepararProximoRegistroDiario(row, btn, op);
             } else {
                 marcarLinhaComoRegistrada(row, btn);
             }
 
-            // Envio para o servidor via fetch sem travar a tela
+            // 3. Envia o registro em plano de fundo de modo não-bloqueante
             fetch(API_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify([dadosItem])
-            }).catch(e => console.log("Registrado no Sheets."));
+            }).catch(e => console.log("Registrado no backend."));
         }
 
-        // ================= ALMOXARIFADO TÉCNICO =================
+        // ================= ALMOXARIFADO TÉCNICO COM VALIDAÇÃO DE DADOS EM DATALIST =================
         function renderAlmoxarifadoView() {
             const categorias = [...new Set(almoxarifadoItens.map(i => i.categoria).filter(Boolean))];
             const select = document.getElementById("almoxCategoriaFilter");
@@ -853,7 +854,7 @@
             abrirModalEditarItem(id);
         }
 
-        async function confirmarMovimentacao() {
+        function confirmarMovimentacao() {
             const id = document.getElementById("movItemSelect").value;
             const item = almoxarifadoItens.find(i => String(i.id) === id);
             const quantidade = Number(document.getElementById("movQuantidade").value);
@@ -868,12 +869,13 @@
                 motivo: document.getElementById("movMotivo").value
             };
 
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "movimentacao", dados: payload }) });
-                alert("Movimentação registrada com sucesso!");
-                fecharModalMovimentacao();
-                await carregarTudo();
-            } catch (e) { alert("Erro ao registrar movimentação."); }
+            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "movimentacao", dados: payload }) })
+                .then(() => {
+                    alert("Movimentação registrada com sucesso!");
+                    fecharModalMovimentacao();
+                    carregarTudo();
+                })
+                .catch(() => alert("Erro ao registrar movimentação."));
         }
 
         function abrirModalCadastroItem() {
@@ -886,7 +888,7 @@
         }
         function fecharModalCadastroItem() { document.getElementById("cadastroItemModal").classList.add("hidden"); }
 
-        async function confirmarCadastroItem() {
+        function confirmarCadastroItem() {
             const nome = document.getElementById("novoItemNome").value.trim();
             const cat = document.getElementById("novoItemCategoria").value.trim();
             if (!nome) { alert("Informe o nome do item."); return; }
@@ -906,12 +908,13 @@
                 localizacao: document.getElementById("novoItemLocal").value.trim()
             };
 
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "cadastroItemEstoque", dados: payload }) });
-                alert(`Item cadastrado com sucesso! ID Gerado: #${idGerado}`);
-                fecharModalCadastroItem();
-                await carregarTudo();
-            } catch (e) { alert("Erro ao cadastrar item."); }
+            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "cadastroItemEstoque", dados: payload }) })
+                .then(() => {
+                    alert(`Item cadastrado com sucesso! ID Gerado: #${idGerado}`);
+                    fecharModalCadastroItem();
+                    carregarTudo();
+                })
+                .catch(() => alert("Erro ao cadastrar item."));
         }
 
         function abrirModalEditarItem(id) {
@@ -943,7 +946,7 @@
 
         function fecharModalEditarItem() { document.getElementById("editarItemModal").classList.add("hidden"); }
 
-        async function confirmarEdicaoItem() {
+        function confirmarEdicaoItem() {
             const id = document.getElementById("editItemId").value;
             const nome = document.getElementById("editItemNome").value.trim();
             if (!nome) { alert("O nome do item é obrigatório."); return; }
@@ -960,12 +963,13 @@
                 localizacao: document.getElementById("editItemLocal").value.trim()
             };
 
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "editarItemEstoque", dados: payload }) });
-                alert("Dados salvos com sucesso!");
-                fecharModalEditarItem();
-                await carregarTudo();
-            } catch (e) { alert("Erro ao salvar alterações."); }
+            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo: "editarItemEstoque", dados: payload }) })
+                .then(() => {
+                    alert("Dados salvos com sucesso!");
+                    fecharModalEditarItem();
+                    carregarTudo();
+                })
+                .catch(() => alert("Erro ao salvar alterações."));
         }
 
         // ================= IMPRESSÃO MATRIZ DE PAPEL ADAPTÁVEL =================
@@ -1073,26 +1077,18 @@
                         @media print { body { margin: 0; } tr { page-break-inside: avoid; } }
                     </style>
                 </head>
-                <body>
+                <body onload="window.print(); setTimeout(function() { window.close(); }, 500);">
                     <table>
                         <tr><td class="main-header" style="width: 18%;">Maquina/ Equipamento</td><td colspan="${numColunas}" class="value-header">${maquina}</td></tr>
                         <tr><td class="main-header">Periodicidade</td><td colspan="${numColunas}" class="value-header" style="font-size: 11px;">${per}</td></tr>
                         <tr><td class="date-header">${tituloLinhaDatas}</td>${headerDatasHtml}</tr>
                         ${htmlRows}
                     </table>
-                `);
-            
-            printWindow.document.write('<' + 'script>');
-            printWindow.document.write('window.onload = function() { window.print(); setTimeout(function() { window.close(); }, 500); };');
-            printWindow.document.write('</' + 'script>');
-            
-            printWindow.document.write(`
                 </body>
                 </html>`);
             printWindow.document.close();
         }
 
-        // ================= AUXILIARES GLOBAIS =================
         function toggleLoading(active) { document.getElementById("loadingIndicator").classList.toggle("hidden", !active); }
         function toggleConfigModal(show) { document.getElementById("configModal").classList.toggle("hidden", !show); }
         function salvarConfigUrl() {
