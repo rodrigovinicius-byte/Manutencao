@@ -489,15 +489,15 @@
             document.getElementById("pendenciasDetalhe").textContent = exemplos + (vencidos.length > 3 ? ` e mais ${vencidos.length - 3}...` : "");
         }
 
-        // CORREÇÃO FIXA: Substituído o erro do 'sector' por 'setor'
+        // CORREÇÃO: Função altamente resiliente a espaços invisíveis para não quebrar a contagem
         function renderSetorCards() {
-            const setoresNaBase = [...new Set(checklistItens.map(i => i.setor).filter(Boolean))];
+            const setoresNaBase = [...new Set(checklistItens.map(i => (i.setor || "").trim()).filter(Boolean))];
             const setores = setoresNaBase.length ? setoresNaBase : SETORES_PADRAO;
             const container = document.getElementById("setorCards");
             container.innerHTML = "";
 
             setores.forEach(setor => {
-                const pendentesDoSetor = checklistStatus.filter(s => s.setor === setor && s.vencido).length;
+                const pendentesDoSetor = checklistStatus.filter(s => (s.setor || "").trim() === setor && s.vencido).length;
                 const badge = pendentesDoSetor > 0
                     ? `<span class="inline-block mt-3 text-[11px] font-semibold bg-red-100 text-red-700 px-3 py-1 rounded-full">${pendentesDoSetor} pendente(s)</span>`
                     : `<span class="inline-block mt-3 text-[11px] font-semibold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">Em dia</span>`;
@@ -520,17 +520,17 @@
         }
 
         function renderPeriodoCards(setor) {
-            const periodosNaBase = [...new Set(checklistItens.filter(i => i.setor === setor).map(i => i.periodicidade).filter(Boolean))];
+            const periodosNaBase = [...new Set(checklistItens.filter(i => (i.setor || "").trim() === setor).map(i => (i.periodicidade || "").trim()).filter(Boolean))];
             const periodos = periodosNaBase.length ? periodosNaBase : ["Diária/ Intradiária", "Semanal", "Quinzenal", "Mensal"];
             const container = document.getElementById("periodoCards");
             container.innerHTML = "";
 
             periodos.forEach(periodo => {
-                const itensDoGrupo = checklistItens.filter(i => i.setor === setor && i.periodicidade === periodo);
-                const maquinasUnicas = [...new Set(itensDoGrupo.map(i => i.maquina).filter(Boolean))];
+                const itensDoGrupo = checklistItens.filter(i => (i.setor || "").trim() === setor && (i.periodicidade || "").trim() === periodo);
+                const maquinasUnicas = [...new Set(itensDoGrupo.map(i => (i.maquina || "").trim()).filter(Boolean))];
                 const totalMaquinas = maquinasUnicas.length;
 
-                const statusDoGrupo = checklistStatus.filter(s => s.setor === setor && s.periodicidade === periodo);
+                const statusDoGrupo = checklistStatus.filter(s => (s.setor || "").trim() === setor && (s.periodicidade || "").trim() === periodo);
                 const vencidos = statusDoGrupo.filter(s => s.vencido).length;
 
                 let badge = vencidos > 0
@@ -554,28 +554,33 @@
             mostrarView("checklist-itens", true);
         }
 
-        // ================= RECURSOS AUXILIARES DO CHECKLIST =================
-        function ocoletarDadosChecklist(row) {
-            return {
-                maquina: row.getAttribute("data-maquina"),
-                item: row.getAttribute("data-item"),
-                setor: setorAtual,
-                periodicidade: periodoAtual,
-                status: row.querySelector(".status-sel").value,
-                operador: row.querySelector(".operador-inp").value,
-                obs: row.querySelector(".obs-inp").value
-            };
+        function getStatusInfo(maquina, periodicidade) {
+            return checklistStatus.find(s => (s.maquina || "").trim() === (maquina || "").trim() && (s.periodicidade || "").trim() === (periodicidade || "").trim());
+        }
+
+        function badgeStatusHtml(statusInfo) {
+            if (!statusInfo || !statusInfo.ultimoRegistro) {
+                return `<span class="text-[11px] font-bold bg-red-100 text-red-700 px-2.5 py-1 rounded-full shadow-sm">Nunca feito</span>`;
+            }
+            if (statusInfo.vencido) {
+                return `<span class="text-[11px] font-bold bg-red-100 text-red-700 px-2.5 py-1 rounded-full shadow-sm">Atrasado (${statusInfo.diasDesde}d)</span>`;
+            }
+            if (statusInfo.diasRestantes <= 1) {
+                return `<span class="text-[11px] font-bold bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full shadow-sm">Vence hoje/amanhã</span>`;
+            }
+            return `<span class="text-[11px] font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full shadow-sm">Em dia</span>`;
         }
 
         function renderChecklistItensView() {
             const container = document.getElementById("checklistContainer");
             container.innerHTML = "";
 
-            const filtrados = checklistItens.filter(x => x.setor === setorAtual && x.periodicidade === periodoAtual);
+            const filtrados = checklistItens.filter(x => (x.setor || "").trim() === setorAtual && (x.periodicidade || "").trim() === periodoAtual);
             const agrupado = {};
             filtrados.forEach(d => {
-                if (!agrupado[d.maquina]) agrupado[d.maquina] = [];
-                agrupado[d.maquina].push(d);
+                const mq = (d.maquina || "").trim();
+                if (!agrupado[mq]) agrupado[mq] = [];
+                agrupado[mq].push(d);
             });
 
             if (Object.keys(agrupado).length === 0) {
@@ -635,7 +640,57 @@
             }
         }
 
-        // CORREÇÃO DEFINITIVA DO BOTÃO TRAVADO: Atualiza o botão no EXATO INSTANTE do clique, sem travar na rede
+        function ocoletarDadosChecklist(row) {
+            return {
+                maquina: row.getAttribute("data-maquina"),
+                item: row.getAttribute("data-item"),
+                setor: setorAtual,
+                periodicidade: periodoAtual,
+                status: row.querySelector(".status-sel").value,
+                operador: row.querySelector(".operador-inp").value,
+                obs: row.querySelector(".obs-inp").value
+            };
+        }
+
+        function ehPeriodicidadeDiaria(periodicidade) {
+            const normalizado = (periodicidade || "")
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+            return normalizado === "diaria" || normalizado.includes("intradi");
+        }
+
+        function marcarLinhaComoRegistrada(row, btn) {
+            row.classList.remove("row-check");
+            row.classList.add("bg-emerald-50/40");
+            row.dataset.registrado = "true";
+            row.querySelectorAll("input, select").forEach(el => el.disabled = true);
+            btn.disabled = true;
+            btn.className = "w-full bg-emerald-600 text-white text-xs font-bold py-2 px-4 rounded-xl cursor-default flex items-center justify-center gap-1 shadow-sm";
+            btn.innerHTML = `<i class="fa-solid fa-check"></i> Registrado`;
+        }
+
+        function prepararProximoRegistroDiario(row, btn, operador) {
+            const agora = new Date();
+            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            let cell = row.querySelector("td");
+            let notaExistente = cell.querySelector(".lbl-carimbo-time");
+            if(notaExistente) notaExistente.remove();
+
+            let carimbo = document.createElement("div");
+            carimbo.className = "lbl-carimbo-time mt-1.5 text-[11px] text-emerald-700 font-semibold";
+            carimbo.innerHTML = `Último registro hoje: ${hora} · <span class="capitalize">${operador}</span>`;
+            cell.appendChild(carimbo);
+
+            row.querySelector(".operador-inp").value = "";
+            row.querySelector(".status-sel").value = "OK";
+            row.querySelector(".obs-inp").value = "";
+
+            btn.disabled = false;
+            btn.className = "registrar-btn w-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-1 shadow-sm transition-all";
+            btn.innerHTML = `<i class="fa-solid fa-arrows-rotate text-[10px]"></i> Registrar Novamente`;
+        }
+
+        // CORREÇÃO: Disparo assíncrono em plano de fundo - sem bloqueios
         function registrarItemIndividualChecklist(btn) {
             const row = btn.closest("tr");
             const op = row.querySelector(".operador-inp").value.trim();
@@ -644,18 +699,17 @@
 
             const dadosItem = ocoletarDadosChecklist(row);
             
-            // 1. Desativa para evitar duplo clique acidental
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>`;
 
-            // 2. Transiciona o layout na mesma hora (Sem carregar em cascata síncrona)
+            // Interface atualiza imediatamente
             if (ehPeriodicidadeDiaria(periodoAtual)) {
                 prepararProximoRegistroDiario(row, btn, op);
             } else {
                 marcarLinhaComoRegistrada(row, btn);
             }
 
-            // 3. Dispara a requisição em plano de fundo de forma invisível
+            // Envio para o servidor via fetch sem travar a tela
             fetch(API_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -663,7 +717,7 @@
             }).catch(e => console.log("Registrado no Sheets."));
         }
 
-        // ================= ALMOXARIFADO TÉCNICO COM VALIDAÇÃO DE DADOS EM DATALIST =================
+        // ================= ALMOXARIFADO TÉCNICO =================
         function renderAlmoxarifadoView() {
             const categorias = [...new Set(almoxarifadoItens.map(i => i.categoria).filter(Boolean))];
             const select = document.getElementById("almoxCategoriaFilter");
@@ -784,6 +838,14 @@
                 document.getElementById("imageViewerModal").classList.remove("hidden");
             }
         }
+
+        function visualizarImagemItem() {
+            if(imagemAtualVisualizar) {
+                document.getElementById("imageViewerSrc").src = imagemAtualVisualizar;
+                document.getElementById("imageViewerModal").classList.remove("hidden");
+            }
+        }
+        function fecharImageViewer() { document.getElementById("imageViewerModal").classList.add("hidden"); }
 
         function abrirModalEditarItemDesdeMov() {
             const id = document.getElementById("movItemSelect").value;
@@ -910,7 +972,7 @@
         function imprimirFolhaPapel(maquina) {
             const set = setorAtual;
             const per = periodoAtual;
-            const filtrados = checklistItens.filter(x => x.setor === set && x.periodicidade === per && x.maquina === maquina);
+            const filtrados = checklistItens.filter(x => (x.setor || "").trim() === (set || "").trim() && (x.periodicidade || "").trim() === (per || "").trim() && x.maquina === maquina);
             const periodoNorm = (per || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
             
             let cabecalhosColunas = [];
